@@ -9,5 +9,4 @@ Build & Deploy:
   - `npm run build`
   - `npm run deploy` (builds and runs `firebase deploy`)
 
-# sun-clouds
 Basically the v2 of simpleforecast :)
