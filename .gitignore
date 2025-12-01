@@ -1,23 +1,14 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
+# Angular build and compile artifacts
+dist/
+out-tsc/
+tmp/
+coverage/
+e2e/test-output/
 .angular/
+.angular/cache/
 
-# Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
-
-# Environment files
-/.env
-
-# Angular CLI and build artefacts
-/.angular-cli.json
-/.ng/
+# Node modules
+node_modules/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -26,16 +17,44 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Firebase build and deployment files
-/firebase-debug.log
-/firebase-debug.*.log
-
-# Logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# Environment files (local configs)
-/.env.*
+# Firebase local files & emulator
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Environment files (keep out of repo)
+.env
+.env.*
+
+# IDEs, editors and OS files
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Miscellaneous
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+__screenshots__/
+
+# Do NOT ignore lockfiles — commit the lockfile for reproducible installs.
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

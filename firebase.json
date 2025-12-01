@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "dist/sun-clouds-app",
     "ignore": [
       "firebase.json",
       "**/.*",
