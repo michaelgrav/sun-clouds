@@ -23,6 +23,7 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "outputPath": "dist/sun-clouds-app",
             "assets": [
               "src/favicon.ico",
               "src/assets"
