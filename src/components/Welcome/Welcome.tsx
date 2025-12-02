@@ -91,12 +91,8 @@ export function Welcome() {
       }}
     >
       <AppShell.Header>
-       <Burger
-          opened={opened}
-          onClick={toggle}
-          hiddenFrom="sm"
-          size="sm" />
-          
+        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+
         <div>Sun Clouds</div>
         <div>
           Forecast for {weatherData?.properties?.relativeLocation?.properties?.city},
