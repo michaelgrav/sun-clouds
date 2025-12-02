@@ -1,33 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
+import axios from 'axios';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [weatherData, setWeatherData] = useState(null);
+  const [weatherForecast, setWeatherForecast] = useState(null);
+
+  useEffect(() => {
+    // First API call has the links to the forecast and hourly forecast
+    axios.get('https://api.weather.gov/points/37.5694,-77.4755')
+      .then(response => {
+        setWeatherData(response.data);
+      })
+      .catch(error => {
+        console.error(error)
+      });
+  }, []);
+
+  useEffect(() => {
+    // Make second API call to get the actual weather data
+    axios.get(weatherData?.properties?.forecast)
+      .then(response => {
+        setWeatherForecast(response.data);
+      })
+      .catch(error => {
+        console.error(error)
+      });  
+    
+  }, [weatherData]);
+
+  console.log(weatherForecast)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <TableContainer>
+        <Table sx={{ minWidth: 650 }} aria-label="daily forecast table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Day</TableCell>
+              <TableCell align="right">Forecast</TableCell>
+              </TableRow>
+          </TableHead>
+          <TableBody>
+            {weatherForecast?.properties?.periods?.map((period) => (
+              <TableRow
+                key={period.name}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {period.name}
+                </TableCell>
+                <TableCell align="right">{period.detailedForecast}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   )
 }
