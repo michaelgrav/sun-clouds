@@ -26,8 +26,12 @@ export function Welcome() {
   const didFetchRef = useRef({ done: false });
 
   useEffect(() => {
-    if (latitude == null || longitude == null) {return;}
-    if (didFetchRef.current.done) {return;}
+    if (latitude == null || longitude == null) {
+      return;
+    }
+    if (didFetchRef.current.done) {
+      return;
+    }
 
     const fetchWeather = async () => {
       try {
@@ -64,7 +68,9 @@ export function Welcome() {
   ));
 
   const formatHour = (iso?: string) => {
-    if (!iso) {return '';}
+    if (!iso) {
+      return '';
+    }
     try {
       const d = new Date(iso);
       return d.toLocaleTimeString([], { hour: 'numeric', hour12: true });
