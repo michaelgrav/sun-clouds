@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import './App.css'
 import axios from 'axios';
 import Table from '@mui/material/Table';
@@ -10,36 +10,54 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 function App() {
-  const [weatherData, setWeatherData] = useState(null);
-  const [weatherForecast, setWeatherForecast] = useState(null);
+  const [weatherData, setWeatherData] = useState<any>(null);
+  const [weatherForecast, setWeatherForecast] = useState<any>(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   useEffect(() => {
-    // First API call has the links to the forecast and hourly forecast
-    axios.get('https://api.weather.gov/points/37.5694,-77.4755')
-      .then(response => {
-        setWeatherData(response.data);
-      })
-      .catch(error => {
-        console.error(error)
-      });
+    function error() {
+      alert("Sorry, no position available.");
+    }
+    
+    function success(position) {
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+    }
+    navigator.geolocation.getCurrentPosition(success, error);
   }, []);
 
-  useEffect(() => {
-    // Make second API call to get the actual weather data
-    axios.get(weatherData?.properties?.forecast)
-      .then(response => {
-        setWeatherForecast(response.data);
-      })
-      .catch(error => {
-        console.error(error)
-      });  
-    
-  }, [weatherData]);
+  const didFetchRef = useRef({ done: false });
 
-  console.log(weatherForecast)
+  useEffect(() => {
+    if (latitude == null || longitude == null) return;
+    if (didFetchRef.current.done) return;
+
+    const fetchWeather = async () => {
+      try {
+        const pointsRes = await axios.get(
+          `https://api.weather.gov/points/${latitude},${longitude}`
+        );
+        setWeatherData(pointsRes.data);
+
+        const forecastUrl = pointsRes.data?.properties?.forecast;
+        if (forecastUrl) {
+          const forecastRes = await axios.get(forecastUrl);
+          setWeatherForecast(forecastRes.data);
+        }
+
+        didFetchRef.current.done = true;
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchWeather();
+  }, [latitude, longitude]);
 
   return (
     <>
+      <h1>7-Day Weather Forecast for {weatherData?.properties?.relativeLocation?.properties?.city}, {weatherData?.properties?.relativeLocation?.properties?.state}</h1>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="daily forecast table">
           <TableHead>
@@ -49,7 +67,7 @@ function App() {
               </TableRow>
           </TableHead>
           <TableBody>
-            {weatherForecast?.properties?.periods?.map((period) => (
+            {weatherForecast?.properties?.periods?.map((period: any) => (
               <TableRow
                 key={period.name}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
