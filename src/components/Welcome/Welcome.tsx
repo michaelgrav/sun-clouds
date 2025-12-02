@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { Anchor, Table, Text, Title } from '@mantine/core';
-import { AppShell, Burger } from '@mantine/core';
+import { Anchor, AppShell, Burger, Table, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 export function Welcome() {
@@ -14,9 +13,9 @@ export function Welcome() {
 
   useEffect(() => {
     function error() {
-      alert("Sorry, no position available.");
+      alert('Sorry, no position available.');
     }
-    
+
     function success(position: any) {
       setLatitude(position.coords.latitude);
       setLongitude(position.coords.longitude);
@@ -57,7 +56,6 @@ export function Welcome() {
     fetchWeather();
   }, [latitude, longitude]);
 
-
   const dailyRows = weatherForecast?.properties?.periods.map((period: any) => (
     <Table.Tr key={period.name}>
       <Table.Td>{period.name}</Table.Td>
@@ -82,7 +80,6 @@ export function Welcome() {
     </Table.Tr>
   ));
 
-
   return (
     <AppShell
       padding="md"
@@ -95,14 +92,14 @@ export function Welcome() {
     >
       <AppShell.Header>
         <div>Sun Clouds</div>
-        <div>Forecast for {' '}
-          {weatherData?.properties?.relativeLocation?.properties?.city}, 
+        <div>
+          Forecast for {weatherData?.properties?.relativeLocation?.properties?.city},
           {weatherData?.properties?.relativeLocation?.properties?.state}
         </div>
       </AppShell.Header>
-      
+
       <AppShell.Navbar>
-        <Title order={5}  ta="center" mt={50}>
+        <Title order={5} ta="center" mt={50}>
           7-Day Forecast
         </Title>
         <Table>
@@ -117,7 +114,7 @@ export function Welcome() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Title order={1}  ta="center" mt={50}>
+        <Title order={1} ta="center" mt={50}>
           Hourly Forecast
         </Title>
 
