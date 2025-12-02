@@ -1,16 +1,21 @@
-# Angular build and compile artifacts
-dist/
-out-tsc/
-tmp/
-coverage/
-e2e/test-output/
-.angular/
-.angular/cache/
-
-# Node modules
+# Node / environment
 node_modules/
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# TypeScript cache
+# Build outputs
+dist/
+build/
+
+# Vite / cache
+.vite/
+.cache/
+
+# TypeScript
 *.tsbuildinfo
 
 # Logs
@@ -24,9 +29,10 @@ yarn-error.log*
 firebase-debug.log
 firebase-debug.*.log
 
-# Environment files (keep out of repo)
-.env
-.env.*
+# Coverage & test outputs
+coverage/
+e2e/test-output/
+test-output/
 
 # IDEs, editors and OS files
 .idea/
@@ -50,7 +56,6 @@ Desktop.ini
 .sass-cache/
 connect.lock
 libpeerconnection.log
-testem.log
 typings/
 __screenshots__/
 
