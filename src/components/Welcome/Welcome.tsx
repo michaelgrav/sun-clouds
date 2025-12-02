@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { Anchor, AppShell, Burger, Table, Text, Title } from '@mantine/core';
+import { AppShell, Burger, Table, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 export function Welcome() {
@@ -13,7 +13,7 @@ export function Welcome() {
 
   useEffect(() => {
     function error() {
-      alert('Sorry, no position available.');
+      console.error('Sorry, no position available.');
     }
 
     function success(position: any) {
@@ -26,8 +26,12 @@ export function Welcome() {
   const didFetchRef = useRef({ done: false });
 
   useEffect(() => {
-    if (latitude == null || longitude == null) return;
-    if (didFetchRef.current.done) return;
+    if (latitude == null || longitude == null) {
+      return;
+    }
+    if (didFetchRef.current.done) {
+      return;
+    }
 
     const fetchWeather = async () => {
       try {
@@ -64,7 +68,9 @@ export function Welcome() {
   ));
 
   const formatHour = (iso?: string) => {
-    if (!iso) return '';
+    if (!iso) {
+      return '';
+    }
     try {
       const d = new Date(iso);
       return d.toLocaleTimeString([], { hour: 'numeric', hour12: true });
@@ -91,6 +97,8 @@ export function Welcome() {
       }}
     >
       <AppShell.Header>
+        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+
         <div>Sun Clouds</div>
         <div>
           Forecast for {weatherData?.properties?.relativeLocation?.properties?.city},
