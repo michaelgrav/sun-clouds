@@ -1,4 +1,10 @@
-import { useMantineColorScheme, NativeSelect } from '@mantine/core';
+import { useMantineColorScheme, NativeSelect, MantineColorScheme } from '@mantine/core';
+
+const colorOptions = [
+  { value: 'auto', label: 'Auto' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+] as const;
 
 export function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
@@ -9,9 +15,8 @@ export function ColorSchemeToggle() {
         radius="xl" 
         size="xs"
         label="Color Theme" 
-        onChange={(event) => setColorScheme(event.currentTarget.value.toString().toLowerCase())}
-        data={[
-        'Auto', 'Light', 'Dark'
-      ]} />
+        onChange={(event) => setColorScheme(event.currentTarget.value as MantineColorScheme)}
+        data={colorOptions}
+      />
   );
 }

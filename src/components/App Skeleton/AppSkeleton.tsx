@@ -37,7 +37,7 @@ export function AppSkeleton() {
         >
           <Group style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <Text size={isSmall ? 'md' : 'xl'} ml={isSmall ? 0 : 10}>
+            <Text size={isSmall ? 'md' : 'xl'} ml={isSmall ? 0 : 10} component="div">
               {' '}
               ☀️ Sun Clouds ☁️
             </Text>
@@ -51,6 +51,7 @@ export function AppSkeleton() {
             style={{
               textAlign: 'right',
             }}
+            component="div"
           >
             <ColorSchemeToggle/>
           </Text>
@@ -78,7 +79,7 @@ export function AppSkeleton() {
           </>
         ) : (
           <Center>
-            <Loader color="yellow" size="xl" mt={20} />
+            <Loader color="yellow" size="xl" mt={20} data-testid="hourly-loader" />
           </Center>
         )}
       </AppShell.Main>

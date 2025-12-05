@@ -9,7 +9,7 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
   if (!periods) {
     return (
       <Center>
-        <Loader color="yellow" mt={20} />
+        <Loader color="yellow" mt={20} data-testid="daily-loader" />
       </Center>
     );
   }
