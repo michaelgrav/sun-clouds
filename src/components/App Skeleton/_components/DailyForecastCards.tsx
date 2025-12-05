@@ -28,7 +28,6 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
           withBorder
           mb="35"
           ml="10"
-          mr="10"
           key={period.name}
           style={{ display: 'flex', flexDirection: 'column', height: 'auto', overflow: 'visible' }}
         >
