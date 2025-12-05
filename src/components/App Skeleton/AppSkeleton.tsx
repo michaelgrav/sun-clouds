@@ -1,169 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
-import { AppShell, Burger, Card, Center, Divider, Group, Loader, ScrollArea, Table, Text, Title } from '@mantine/core';
+import { AppShell, Burger, Center, Divider, Group, Loader, Text, Title } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
+import { useWeatherData } from '../../hooks/useWeatherData';
+import { DailyForecastCards } from './_components/DailyForecastCards';
+import { CurrentSummaryCard } from './_components/CurrentSummaryCard';
+import { HourlyTables } from './_components/HourlyTables';
 
 export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
-  const [weatherData, setWeatherData] = useState<any>(null);
-  const [weatherForecast, setWeatherForecast] = useState<any>(null);
-  const [hourlyWeatherForecast, setHourlyWeatherForecast] = useState<any>(null);
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
-
-  useEffect(() => {
-    function error() {
-      console.error('Sorry, no position available.');
-    }
-
-    function success(position: any) {
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
-    }
-    navigator.geolocation.getCurrentPosition(success, error);
-  }, []);
-
-  const didFetchRef = useRef({ done: false });
-
   const isSmall = useMediaQuery('(max-width: 768px)');
 
-  useEffect(() => {
-    if (latitude == null || longitude == null) {
-      return;
-    }
-    if (didFetchRef.current.done) {
-      return;
-    }
+  const { weatherData, weatherForecast, hourlyWeatherForecast, isLoading } = useWeatherData();
 
-    const fetchWeather = async () => {
-      try {
-        const pointsRes = await axios.get(
-          `https://api.weather.gov/points/${latitude},${longitude}`
-        );
-        setWeatherData(pointsRes.data);
-
-        const forecastUrl = pointsRes.data?.properties?.forecast;
-        const hourlyForecastUrl = pointsRes.data?.properties?.forecastHourly;
-        if (forecastUrl) {
-          const forecastRes = await axios.get(forecastUrl);
-          setWeatherForecast(forecastRes.data);
-        }
-        if (hourlyForecastUrl) {
-          const hourlyForecastRes = await axios.get(hourlyForecastUrl);
-          setHourlyWeatherForecast(hourlyForecastRes.data);
-        }
-
-        didFetchRef.current.done = true;
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchWeather();
-  }, [latitude, longitude]);
-
-  // Daily forecast cards (skipping the first entry which is the current time)
-  const dailyCards = weatherForecast?.properties?.periods.slice(1).map((period: any) => (
-    <Card
-      shadow="xs"
-      padding="md"
-      radius="md"
-      withBorder
-      mb="35"
-      ml="10"
-      mr="10"
-      key={period.name}
-      style={{ display: 'flex', flexDirection: 'column', height: 'auto', overflow: 'visible' }}
-    >
-      <Card.Section>
-        <Text size="md" mt="xs" mb="xs" ta="center">
-          {period.name}
-        </Text>
-      </Card.Section>
-
-      <Text size="xs">
-        {period.detailedForecast ||
-          'No summary available :( I guess you\'re gonna have to look outside...'}
-      </Text>
-    </Card>
-  ));
-
-  const formatHour = (iso?: string) => {
-    if (!iso) {
-      return '';
-    }
-    try {
-      const d = new Date(iso);
-      return d.toLocaleTimeString([], { hour: 'numeric', hour12: true });
-    } catch (e) {
-      return iso;
-    }
-  };
-
-  const isSameLocalDay = (first: Date, second: Date) =>
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate();
-
-  const renderHourlyTables = () => {
-    const next24Hours = hourlyWeatherForecast?.properties?.periods.slice(0, 48) ?? [];
-    if (!next24Hours.length) {
-      return null;
-    }
-
-    const today = new Date();
-    const grouped: { label: string; periods: any[] }[] = [];
-
-    next24Hours.forEach((period: any) => {
-      const start = new Date(period.startTime);
-      const label = isSameLocalDay(start, today)
-        ? 'Today'
-        : start.toLocaleDateString([], { weekday: 'long' });
-
-      const existingGroup = grouped.find((group) => group.label === label);
-      if (existingGroup) {
-        existingGroup.periods.push(period);
-      } else {
-        grouped.push({ label, periods: [period] });
-      }
-    });
-
-    return grouped.map(({ label, periods }) => (
-      <Card key={label} shadow="sm" padding="md" radius="md" withBorder mb="25">
-        <Card.Section>
-          <Text size="lg" mt="md" mb="xs" ta="center">
-            {label}
-          </Text>
-        </Card.Section>
-
-        <Table striped highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Time</Table.Th>
-              <Table.Th style={{ textAlign: 'right' }}>Rain Chance</Table.Th>
-              <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {periods.map((period: any) => (
-              <Table.Tr key={period.startTime}>
-                <Table.Td>{formatHour(period.startTime)}</Table.Td>
-                <Table.Td style={{ textAlign: 'right' }}>
-                  {period.probabilityOfPrecipitation?.value != null
-                    ? `${period.probabilityOfPrecipitation.value}%`
-                    : ''}
-                </Table.Td>
-                <Table.Td style={{ textAlign: 'right' }}>
-                  {period.temperature != null ? `${period.temperature}${period.temperatureUnit}` : ''}
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </Card>
-    ));
-  };
+  const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
+  const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
 
   return (
     <AppShell
@@ -208,37 +58,13 @@ export function AppSkeleton() {
       </AppShell.Header>
 
       <AppShell.Navbar>
-        <ScrollArea h="100%" offsetScrollbars>
-          <Title order={5} ta="center" mt={25} mb={15}>
-            7-Day Forecast
-          </Title>
-
-          {/* return loading circle conditionally if the API call hasn't returned yet */}
-          {dailyCards ? (
-            dailyCards
-          ) : (
-            <Center>
-              <Loader color="yellow" mt={20} />
-            </Center>
-          )}
-        </ScrollArea>
+        <DailyForecastCards periods={dailyPeriods} />
       </AppShell.Navbar>
 
       <AppShell.Main>
-        {hourlyWeatherForecast ? (
+        {hourlyPeriods ? (
           <>
-            <Card shadow="sm" padding="lg" radius="md" withBorder mb="35">
-              <Card.Section>
-                <Text size="lg" mt="md" mb="xs" ta="center">
-                  Current Weather Summary
-                </Text>
-              </Card.Section>
-
-              <Text size="sm">
-                {weatherForecast?.properties?.periods[0]?.detailedForecast ||
-                  'No summary available :( I guess you\'re gonna have to look outside...'}
-              </Text>
-            </Card>
+            <CurrentSummaryCard summary={weatherForecast?.properties?.periods[0]?.detailedForecast} />
 
             <Divider my="md" variant="dotted" size="md"/>
 
@@ -248,7 +74,7 @@ export function AppSkeleton() {
                   : 'for '}
             </Title>
 
-            {renderHourlyTables()}
+            <HourlyTables periods={hourlyPeriods} />
           </>
         ) : (
           <Center>
