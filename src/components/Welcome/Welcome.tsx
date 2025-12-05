@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { AppShell, Burger, Loader, Table, Title } from '@mantine/core';
+import { AppShell, Burger, Center, Loader, Table, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 export function Welcome() {
@@ -132,7 +132,9 @@ export function Welcome() {
           <Table.Tbody>{dailyRows}</Table.Tbody>
         </Table> :
 
-        <Loader color="yellow" />
+        <Center>
+          <Loader color="yellow" mt={20}/>
+        </Center>
         }
       </AppShell.Navbar>
 
@@ -153,7 +155,9 @@ export function Welcome() {
           <Table.Tbody>{hourlyRows}</Table.Tbody>
         </Table> :
 
-         <Loader color="yellow" size="lg" />
+        <Center>
+          <Loader color="yellow" size="lg" mt={20}/>
+        </Center>
         }
 
         {/* Table for the hourly forecast */}
