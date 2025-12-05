@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { AppShell, Burger, Center, Loader, Skeleton, Table, Title, Text, Group } from '@mantine/core';
+import { AppShell, Burger, Center, Loader, Skeleton, Table, Title, Text, Group, Avatar } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 
 export function Welcome() {
@@ -103,11 +103,11 @@ export function Welcome() {
         <Group style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
           <Group style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <Text size="lg" ml={10}>Sun Clouds</Text>
+            <Text size={isSmall ? 'md' : 'xl'} ml={isSmall ? 0 : 10}> ☀️ Sun Clouds ☁️</Text>
           </Group>
 
           <Text
-            size={isSmall ? 'sm' : 'lg'}
+            size={isSmall ? 'sm' : 'xl'}
             ta="right"
             mr={10}
             style={{
