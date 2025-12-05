@@ -1,9 +1,9 @@
-import { Welcome } from '../components/Welcome/Welcome';
+import { AppSkeleton } from '../components/App Skeleton/AppSkeleton';
 
 export function HomePage() {
   return (
     <>
-      <Welcome />
+      <AppSkeleton />
     </>
   );
 }

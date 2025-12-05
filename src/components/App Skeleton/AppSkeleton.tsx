@@ -4,7 +4,7 @@ import { AppShell, Burger, Center, Group, Loader, Table, Text, Title } from '@ma
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 
-export function Welcome() {
+export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
   const [weatherData, setWeatherData] = useState<any>(null);
   const [weatherForecast, setWeatherForecast] = useState<any>(null);
