@@ -63,6 +63,7 @@ export function AppSkeleton() {
     fetchWeather();
   }, [latitude, longitude]);
 
+  // Daily forecast cards (skipping the first entry which is the current time)
   const dailyCards = weatherForecast?.properties?.periods.slice(1).map((period: any) => (
     <Card
       shadow="xs"
@@ -100,19 +101,69 @@ export function AppSkeleton() {
     }
   };
 
-  const hourlyRows = hourlyWeatherForecast?.properties?.periods.map((period: any) => (
-    <Table.Tr key={period.startTime}>
-      <Table.Td>{formatHour(period.startTime)}</Table.Td>
-      <Table.Td style={{ textAlign: 'right' }}>
-        {period.probabilityOfPrecipitation?.value != null
-          ? `${period.probabilityOfPrecipitation.value}%`
-          : ''}
-      </Table.Td>
-      <Table.Td style={{ textAlign: 'right' }}>
-        {period.temperature != null ? `${period.temperature}${period.temperatureUnit}` : ''}
-      </Table.Td>
-    </Table.Tr>
-  ));
+  const isSameLocalDay = (first: Date, second: Date) =>
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate();
+
+  const renderHourlyTables = () => {
+    const next24Hours = hourlyWeatherForecast?.properties?.periods.slice(0, 48) ?? [];
+    if (!next24Hours.length) {
+      return null;
+    }
+
+    const today = new Date();
+    const grouped: { label: string; periods: any[] }[] = [];
+
+    next24Hours.forEach((period: any) => {
+      const start = new Date(period.startTime);
+      const label = isSameLocalDay(start, today)
+        ? 'Today'
+        : start.toLocaleDateString([], { weekday: 'long' });
+
+      const existingGroup = grouped.find((group) => group.label === label);
+      if (existingGroup) {
+        existingGroup.periods.push(period);
+      } else {
+        grouped.push({ label, periods: [period] });
+      }
+    });
+
+    return grouped.map(({ label, periods }) => (
+      <Card key={label} shadow="sm" padding="md" radius="md" withBorder mb="25">
+        <Card.Section>
+          <Text size="lg" mt="md" mb="xs" ta="center">
+            {label}
+          </Text>
+        </Card.Section>
+
+        <Table striped highlightOnHover>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Time</Table.Th>
+              <Table.Th style={{ textAlign: 'right' }}>Rain Chance</Table.Th>
+              <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {periods.map((period: any) => (
+              <Table.Tr key={period.startTime}>
+                <Table.Td>{formatHour(period.startTime)}</Table.Td>
+                <Table.Td style={{ textAlign: 'right' }}>
+                  {period.probabilityOfPrecipitation?.value != null
+                    ? `${period.probabilityOfPrecipitation.value}%`
+                    : ''}
+                </Table.Td>
+                <Table.Td style={{ textAlign: 'right' }}>
+                  {period.temperature != null ? `${period.temperature}${period.temperatureUnit}` : ''}
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Card>
+    ));
+  };
 
   return (
     <AppShell
@@ -174,47 +225,36 @@ export function AppSkeleton() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-      {hourlyRows ? (
-        <>
-          <Card shadow="sm" padding="lg" radius="md" withBorder mb="35">
-            <Card.Section>
-              <Text size="lg" mt="md" mb="xs" ta="center">
-                Current Weather Summary
+        {hourlyWeatherForecast ? (
+          <>
+            <Card shadow="sm" padding="lg" radius="md" withBorder mb="35">
+              <Card.Section>
+                <Text size="lg" mt="md" mb="xs" ta="center">
+                  Current Weather Summary
+                </Text>
+              </Card.Section>
+
+              <Text size="sm">
+                {weatherForecast?.properties?.periods[0]?.detailedForecast ||
+                  'No summary available :( I guess you\'re gonna have to look outside...'}
               </Text>
-            </Card.Section>
+            </Card>
 
-            <Text size="sm">
-              {weatherForecast?.properties?.periods[0]?.detailedForecast ||
-                'No summary available :( I guess you\'re gonna have to look outside...'}
-            </Text>
-          </Card>
+            <Divider my="md" variant="dotted" size="md"/>
 
-          <Divider my="md" variant="dotted" size="md"/>
+            <Title order={1} ta="center" mt={25} mb={15}>
+              Hourly Forecast {weatherData
+                  ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
+                  : 'for '}
+            </Title>
 
-          <Title order={1} ta="center" mt={25} mb={15}>
-            Hourly Forecast {weatherData
-                ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
-                : 'for '}
-          </Title>
-          
-            <Table striped highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Time</Table.Th>
-                  <Table.Th style={{ textAlign: 'right' }}>Rain Chance</Table.Th>
-                  <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>{hourlyRows}</Table.Tbody>
-            </Table>
+            {renderHourlyTables()}
           </>
         ) : (
           <Center>
             <Loader color="yellow" size="xl" mt={20} />
           </Center>
         )}
-
-        {/* Table for the hourly forecast */}
       </AppShell.Main>
     </AppShell>
   );
