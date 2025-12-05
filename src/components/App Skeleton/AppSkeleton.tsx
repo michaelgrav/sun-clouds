@@ -22,7 +22,7 @@ export function AppSkeleton() {
       navbar={{
         width: 300,
         breakpoint: 'sm',
-        collapsed: { mobile: !opened },
+        collapsed: { mobile: !opened, desktop: !opened },
       }}
     >
       <AppShell.Header>
@@ -36,7 +36,7 @@ export function AppSkeleton() {
           }}
         >
           <Group style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Burger opened={opened} onClick={toggle} size="sm" />
             <Text size={isSmall ? 'md' : 'xl'} ml={isSmall ? 0 : 10} component="div">
               {' '}
               ☀️ Sun Clouds ☁️
