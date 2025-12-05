@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src",
+    "lib",
+    "test-utils",
+    ".storybook/main.ts",
+    ".storybook/preview.tsx",
+    "vitest.setup.mjs",
+    "vite.config.mjs"
+  ]
+}

@@ -26,6 +26,7 @@ export const useWeatherData = (): WeatherState => {
     };
 
     const handleError = () => {
+      // eslint-disable-next-line no-console
       console.error('Sorry, no position available.');
     };
 
@@ -63,6 +64,7 @@ export const useWeatherData = (): WeatherState => {
 
         didFetchRef.current.done = true;
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       } finally {
         setIsLoading(false);
