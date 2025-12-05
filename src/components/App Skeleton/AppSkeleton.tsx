@@ -5,12 +5,13 @@ import { useWeatherData } from '../../hooks/useWeatherData';
 import { DailyForecastCards } from './_components/DailyForecastCards';
 import { CurrentSummaryCard } from './_components/CurrentSummaryCard';
 import { HourlyTables } from './_components/HourlyTables';
+import ForecastLineChart from './_components/ForecastLineChart';
 
 export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
   const isSmall = useMediaQuery('(max-width: 768px)');
 
-  const { weatherData, weatherForecast, hourlyWeatherForecast, isLoading } = useWeatherData();
+  const { weatherData, weatherForecast, hourlyWeatherForecast } = useWeatherData();
 
   const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
   const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
@@ -74,6 +75,8 @@ export function AppSkeleton() {
                   ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
                   : 'for '}
             </Title>
+
+            <ForecastLineChart data={hourlyPeriods} />
 
             <HourlyTables periods={hourlyPeriods} />
           </>
