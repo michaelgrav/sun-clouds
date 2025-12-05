@@ -48,7 +48,7 @@ export const useWeatherData = (): WeatherState => {
       try {
         setIsLoading(true);
         const pointsRes = await axios.get<PointsResponse>(
-          `https://api.weather.gov/points/38.9152,-77.0235`
+          `https://api.weather.gov/points/${latitude},${longitude}`
         );
         setWeatherData(pointsRes.data);
 
