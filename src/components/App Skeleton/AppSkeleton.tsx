@@ -1,11 +1,11 @@
 import { AppShell, Burger, Center, Divider, Group, Loader, Text, Title } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 import { useWeatherData } from '../../hooks/useWeatherData';
-import { DailyForecastCards } from './_components/DailyForecastCards';
+import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 import { CurrentSummaryCard } from './_components/CurrentSummaryCard';
-import { HourlyTables } from './_components/HourlyTables';
+import { DailyForecastCards } from './_components/DailyForecastCards';
 import ForecastLineChart from './_components/ForecastLineChart';
+import { HourlyTables } from './_components/HourlyTables';
 
 export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
@@ -54,7 +54,7 @@ export function AppSkeleton() {
             }}
             component="div"
           >
-            <ColorSchemeToggle/>
+            <ColorSchemeToggle />
           </Text>
         </Group>
       </AppShell.Header>
@@ -66,14 +66,17 @@ export function AppSkeleton() {
       <AppShell.Main>
         {hourlyPeriods ? (
           <>
-            <CurrentSummaryCard summary={weatherForecast?.properties?.periods[0]?.detailedForecast} />
+            <CurrentSummaryCard
+              summary={weatherForecast?.properties?.periods[0]?.detailedForecast}
+            />
 
-            <Divider my="md" variant="dotted" size="md"/>
+            <Divider my="md" variant="dotted" size="md" />
 
             <Title order={1} ta="center" mt={25} mb={15}>
-              Hourly Forecast {weatherData
-                  ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
-                  : 'for '}
+              Hourly Forecast{' '}
+              {weatherData
+                ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
+                : 'for '}
             </Title>
 
             <ForecastLineChart data={hourlyPeriods} />

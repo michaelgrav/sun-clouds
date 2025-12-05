@@ -1,6 +1,6 @@
-import { createTheme } from '@mantine/core';
+import { createTheme, type MantineColorsTuple } from '@mantine/core';
 
-const sky = [
+const sky: MantineColorsTuple = [
   '#e8f5ff',
   '#d2eaff',
   '#a9d4ff',
@@ -13,7 +13,7 @@ const sky = [
   '#052d52',
 ];
 
-const sunshine = [
+const sunshine: MantineColorsTuple = [
   '#fff9e6',
   '#fff2cc',
   '#ffe4a3',

@@ -40,7 +40,7 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
 
           <Text size="xs">
             {period.detailedForecast ||
-              'No summary available :( I guess you\'re gonna have to look outside...'}
+              "No summary available :( I guess you're gonna have to look outside..."}
           </Text>
         </Card>
       ))}

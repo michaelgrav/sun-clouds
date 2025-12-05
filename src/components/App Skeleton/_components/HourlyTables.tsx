@@ -1,7 +1,7 @@
 import { Card, Table, Text } from '@mantine/core';
-import { Period } from '../../../../types/weather';
 import { formatHour } from '../../../../lib/time/formatHour';
 import { groupHourlyPeriodsByDay } from '../../../../lib/weather/groupHourlyPeriods';
+import { Period } from '../../../../types/weather';
 
 interface HourlyTablesProps {
   periods?: Period[];
@@ -43,7 +43,9 @@ export const HourlyTables = ({ periods, maxHours = 48 }: HourlyTablesProps) => {
                       : ''}
                   </Table.Td>
                   <Table.Td style={{ textAlign: 'right' }}>
-                    {period.temperature != null ? `${period.temperature}${period.temperatureUnit}` : ''}
+                    {period.temperature != null
+                      ? `${period.temperature}${period.temperatureUnit}`
+                      : ''}
                   </Table.Td>
                 </Table.Tr>
               ))}

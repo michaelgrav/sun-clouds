@@ -61,13 +61,9 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   // Add a larger buffer so the line is not clipped at chart edges.
   const buffer = 10;
   const minTemp =
-    minTempRaw != null && maxTempRaw != null
-      ? Math.floor(minTempRaw - buffer)
-      : minTempRaw;
+    minTempRaw != null && maxTempRaw != null ? Math.floor(minTempRaw - buffer) : minTempRaw;
   const maxTemp =
-    minTempRaw != null && maxTempRaw != null
-      ? Math.ceil(maxTempRaw + buffer)
-      : maxTempRaw;
+    minTempRaw != null && maxTempRaw != null ? Math.ceil(maxTempRaw + buffer) : maxTempRaw;
 
   const hasPrecip = chartData.some(
     (point) => typeof point.precipitation === 'number' && point.precipitation > 0
@@ -102,7 +98,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             <ChartTooltip label={label} payload={payload as ReadonlyArray<Record<string, any>>} />
           ),
         }}
-        dotProps={{ r: 3}}
+        dotProps={{ r: 3 }}
       />
 
       {hasPrecip && (
@@ -136,7 +132,10 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             tooltipAnimationDuration={200}
             tooltipProps={{
               content: ({ label, payload }) => (
-                <ChartTooltip label={label} payload={payload as ReadonlyArray<Record<string, any>>} />
+                <ChartTooltip
+                  label={label}
+                  payload={payload as ReadonlyArray<Record<string, any>>}
+                />
               ),
             }}
             dotProps={{ r: 3 }}

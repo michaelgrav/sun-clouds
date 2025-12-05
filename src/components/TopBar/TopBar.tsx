@@ -1,11 +1,9 @@
-import { useMediaQuery } from "@mantine/hooks";
+import { useMediaQuery } from '@mantine/hooks';
 
 export function TopBar() {
   const isSmall = useMediaQuery('(max-width: 768px)');
-  
-  return (
-    <></>
-  );
+
+  return <></>;
 }
 
 export default TopBar;

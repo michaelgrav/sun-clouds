@@ -30,10 +30,9 @@ describe('HourlyTables', () => {
   });
 
   it('renders grouped tables for today and next day', () => {
-    const nextDayLabel = new Date(baseDate.getTime() + 24 * 60 * 60 * 1000).toLocaleDateString(
-      [],
-      { weekday: 'long' }
-    );
+    const nextDayLabel = new Date(baseDate.getTime() + 24 * 60 * 60 * 1000).toLocaleDateString([], {
+      weekday: 'long',
+    });
 
     render(<HourlyTables periods={periods as any} />);
 
