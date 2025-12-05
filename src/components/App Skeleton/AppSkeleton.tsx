@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { AppShell, Burger, Center, Group, Loader, Table, Text, Title } from '@mantine/core';
+import { AppShell, Burger, Card, Center, Divider, Group, Loader, Table, Text, Title } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 
@@ -63,13 +63,29 @@ export function AppSkeleton() {
     fetchWeather();
   }, [latitude, longitude]);
 
-  const dailyRows = weatherForecast?.properties?.periods.map((period: any) => (
-    <Table.Tr key={period.name}>
-      <Table.Td>{period.name}</Table.Td>
-      <Table.Td
-        style={{ textAlign: 'right' }}
-      >{`${period.temperature}${period.temperatureUnit}`}</Table.Td>
-    </Table.Tr>
+  const dailyCards = weatherForecast?.properties?.periods.slice(1).map((period: any) => (
+    <Card
+      shadow="xs"
+      padding="md"
+      radius="md"
+      withBorder
+      mb="35"
+      ml="10"
+      mr="10"
+      key={period.name}
+      style={{ display: 'flex', flexDirection: 'column', height: 'auto', overflow: 'visible' }}
+    >
+      <Card.Section>
+        <Text size="md" mb="xs" ta="center">
+          {period.name}
+        </Text>
+      </Card.Section>
+
+      <Text size="xs" style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+        {period.detailedForecast ||
+          'No summary available :( I guess you\'re gonna have to look outside...'}
+      </Text>
+    </Card>
   ));
 
   const formatHour = (iso?: string) => {
@@ -145,17 +161,9 @@ export function AppSkeleton() {
           7-Day Forecast
         </Title>
 
-        {/* return loading circle conditionally if the API call hasnt returned yet */}
-        {dailyRows ? (
-          <Table striped highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Day</Table.Th>
-                <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{dailyRows}</Table.Tbody>
-          </Table>
+        {/* return loading circle conditionally if the API call hasn't returned yet */}
+        {dailyCards ? (
+          dailyCards
         ) : (
           <Center>
             <Loader color="yellow" mt={20} />
@@ -166,30 +174,43 @@ export function AppSkeleton() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Title order={1} ta="center" mt={5} mb={15}>
-          Hourly Forecast {weatherData
-              ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
-              : 'for '}
-              
-          {/* Spinner for location */}
-          {weatherData ? '' : <Loader color="yellow" size="sm" />}
-        </Title>
+      {hourlyRows ? (
+        <>
+          <Card shadow="sm" padding="lg" radius="md" withBorder mb="35">
+            <Card.Section>
+              <Text size="lg" mt="md" mb="xs" ta="center">
+                Current Weather Summary
+              </Text>
+            </Card.Section>
 
-        {/* return loading circle conditionally if the API call hasnt returned yet */}
-        {hourlyRows ? (
-          <Table striped highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Time</Table.Th>
-                <Table.Th style={{ textAlign: 'right' }}>Rain Chance</Table.Th>
-                <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{hourlyRows}</Table.Tbody>
-          </Table>
+            <Text size="sm">
+              {weatherForecast?.properties?.periods[0]?.detailedForecast ||
+                'No summary available :( I guess you\'re gonna have to look outside...'}
+            </Text>
+          </Card>
+
+          <Divider my="md" variant="dotted" size="md"/>
+
+          <Title order={1} ta="center" mt={25} mb={15}>
+            Hourly Forecast {weatherData
+                ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
+                : 'for '}
+          </Title>
+          
+            <Table striped highlightOnHover>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Time</Table.Th>
+                  <Table.Th style={{ textAlign: 'right' }}>Rain Chance</Table.Th>
+                  <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{hourlyRows}</Table.Tbody>
+            </Table>
+          </>
         ) : (
           <Center>
-            <Loader color="yellow" size="lg" mt={20} />
+            <Loader color="yellow" size="xl" mt={20} />
           </Center>
         )}
 
