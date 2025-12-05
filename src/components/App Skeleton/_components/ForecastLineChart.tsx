@@ -15,7 +15,9 @@ const ChartTooltip = ({
   payload?: ReadonlyArray<Record<string, any>>;
 }) => {
   const filtered = getFilteredChartTooltipPayload(Array.from(payload ?? []));
-  if (!filtered.length) return null;
+  if (!filtered.length) {
+    return null;
+  }
 
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">
