@@ -70,40 +70,43 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
 
   return (
     <>
-      <LineChart
-        h={360}
-        mb={hasPrecip ? 30 : 50}
-        data={chartData}
-        dataKey="date"
-        series={[
-          {
-            name: 'temperature',
-            label: 'Temperature',
-            color: 'yellow.5',
-          },
-        ]}
-        lineChartProps={{
-          // Keep charts visually aligned but do not sync tooltips between charts
-          margin: { top: 12, right: 36, left: 16, bottom: 16 },
-        }}
-        strokeWidth={3}
-        curveType="natural"
-        yAxisLabel="Temp (°F)"
-        yAxisProps={{ domain: [minTemp ?? 'auto', maxTemp ?? 'auto'] }}
-        valueFormatter={(value) => `${value}°F`}
-        tooltipAnimationDuration={200}
-        tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
-        dotProps={{ r: 3 }}
-      />
+      <Paper withBorder shadow="sm" radius="md" p="md" mb="xl">
+        <Text fw={700} size="md" mb="sm">
+          Temperature
+        </Text>
+        <LineChart
+          h={360}
+          data={chartData}
+          dataKey="date"
+          series={[
+            {
+              name: 'temperature',
+              label: 'Temperature',
+              color: 'yellow.5',
+            },
+          ]}
+          lineChartProps={{
+            // Keep charts visually aligned but do not sync tooltips between charts
+            margin: { top: 12, right: 36, left: 16, bottom: 16 },
+          }}
+          strokeWidth={3}
+          curveType="natural"
+          yAxisLabel="Temp (°F)"
+          yAxisProps={{ domain: [minTemp ?? 'auto', maxTemp ?? 'auto'] }}
+          valueFormatter={(value) => `${value}°F`}
+          tooltipAnimationDuration={200}
+          tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
+          dotProps={{ r: 3 }}
+        />
+      </Paper>
 
       {hasPrecip && (
-        <>
-          <Text mt="xl" size="sm" fw={600} ta="center">
+        <Paper withBorder shadow="sm" radius="md" p="md" mb="xl">
+          <Text size="sm" fw={600} ta="center">
             There&apos;s a chance of rain in the next {hoursToShow} hours!
           </Text>
           <LineChart
             h={240}
-            mb={75}
             data={chartData}
             dataKey="date"
             series={[
@@ -129,7 +132,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             dotProps={{ r: 3 }}
             activeDotProps={{ r: 5, strokeWidth: 1 }}
           />
-        </>
+        </Paper>
       )}
     </>
   );
