@@ -12,7 +12,7 @@ export const CurrentSummaryCard = ({ summary }: CurrentSummaryCardProps) => (
       </Text>
     </Card.Section>
 
-    <Text size="sm">
+    <Text size="sm" ta="center">
       {summary || "No summary available :( I guess you're gonna have to look outside..."}
     </Text>
   </Card>

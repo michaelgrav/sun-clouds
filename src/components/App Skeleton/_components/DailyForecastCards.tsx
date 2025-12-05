@@ -38,7 +38,7 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
             </Text>
           </Card.Section>
 
-          <Text size="xs">
+          <Text size="xs" ta="center">
             {period.detailedForecast ||
               "No summary available :( I guess you're gonna have to look outside..."}
           </Text>
