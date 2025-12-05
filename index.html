@@ -57,7 +57,18 @@
         setVar('--app-accent-strong', palette.accentStrong);
 
         root.style.backgroundColor = palette.background;
-        document.body.style.backgroundColor = palette.background;
+
+        const applyBodyBg = () => {
+          if (document.body) {
+            document.body.style.backgroundColor = palette.background;
+          }
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', applyBodyBg, { once: true });
+        } else {
+          applyBodyBg();
+        }
 
         const themeMeta = document.querySelector('meta[name="theme-color"]');
         if (themeMeta) themeMeta.setAttribute('content', palette.background);

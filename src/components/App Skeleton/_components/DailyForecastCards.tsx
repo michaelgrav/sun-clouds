@@ -48,6 +48,8 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
           </Text>
         </Card>
       ))}
+
+      <Text ta="center">You found the secret sun! 🌞</Text>
     </ScrollArea>
   );
 };
