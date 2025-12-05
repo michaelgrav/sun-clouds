@@ -26,6 +26,27 @@ const sunshine: MantineColorsTuple = [
   '#5c3604',
 ];
 
+export const appPalettes = {
+  light: {
+    background: '#f7fbff',
+    surface: '#e8f2ff',
+    text: '#0b2a3a',
+    primary: '#2b8ef7',
+    primaryStrong: '#1a75d0',
+    accent: '#ffb429',
+    accentStrong: '#e59c17',
+  },
+  dark: {
+    background: '#0e1724',
+    surface: '#162235',
+    text: '#e8f1ff',
+    primary: '#8cc7ff',
+    primaryStrong: '#5caaf7',
+    accent: '#ffd46c',
+    accentStrong: '#e5a42b',
+  },
+} as const;
+
 export const theme = createTheme({
   primaryColor: 'sky',
   primaryShade: { light: 5, dark: 4 },
