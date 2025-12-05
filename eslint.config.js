@@ -1,10 +1,9 @@
 import mantine from 'eslint-config-mantine';
-import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 // @ts-check
-export default defineConfig(
-  tseslint.configs.recommended,
+export default tseslint.config(
+  ...tseslint.configs.recommended,
   ...mantine,
   { ignores: ['**/*.{mjs,cjs,js,d.ts,d.mts}'] },
   {
@@ -15,7 +14,7 @@ export default defineConfig(
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: process.cwd(),
-        project: ['./tsconfig.json'],
+        project: ['./tsconfig.eslint.json'],
       },
     },
   }

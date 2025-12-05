@@ -1,13 +1,22 @@
-import { Button, Group, useMantineColorScheme } from '@mantine/core';
+import { MantineColorScheme, NativeSelect, useMantineColorScheme } from '@mantine/core';
+
+const colorOptions = [
+  { value: 'auto', label: 'Auto' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+] as const;
 
 export function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
 
   return (
-    <Group justify="center" mt="xl">
-      <Button onClick={() => setColorScheme('light')}>Light</Button>
-      <Button onClick={() => setColorScheme('dark')}>Dark</Button>
-      <Button onClick={() => setColorScheme('auto')}>Auto</Button>
-    </Group>
+    <NativeSelect
+      variant="filled"
+      radius="xl"
+      size="xs"
+      label="Color Theme"
+      onChange={(event) => setColorScheme(event.currentTarget.value as MantineColorScheme)}
+      data={colorOptions}
+    />
   );
 }

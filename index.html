@@ -7,7 +7,62 @@
       name="viewport"
       content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
     />
+    <meta name="theme-color" content="#f7fbff" />
     <title>Sun Clouds</title>
+    <script>
+      // Apply stored or preferred color scheme before React renders, this will avoid color flashes when loading
+      (() => {
+        const storageKey = 'mantine-color-scheme-value';
+        const stored = localStorage.getItem(storageKey);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const scheme =
+          (stored ?? 'auto').toLowerCase() === 'auto'
+            ? prefersDark
+              ? 'dark'
+              : 'light'
+            : (stored ?? 'light').toLowerCase();
+
+        const palettes = {
+          light: {
+            background: '#f7fbff',
+            surface: '#e8f2ff',
+            text: '#0b2a3a',
+            primary: '#2b8ef7',
+            primaryStrong: '#1a75d0',
+            accent: '#ffb429',
+            accentStrong: '#e59c17',
+          },
+          dark: {
+            background: '#0e1724',
+            surface: '#162235',
+            text: '#e8f1ff',
+            primary: '#8cc7ff',
+            primaryStrong: '#5caaf7',
+            accent: '#ffd46c',
+            accentStrong: '#e5a42b',
+          },
+        };
+
+        const palette = palettes[scheme] ?? palettes.light;
+        const root = document.documentElement;
+        root.setAttribute('data-mantine-color-scheme', scheme);
+
+        const setVar = (name, value) => root.style.setProperty(name, value);
+        setVar('--app-bg', palette.background);
+        setVar('--app-surface', palette.surface);
+        setVar('--app-text', palette.text);
+        setVar('--app-primary', palette.primary);
+        setVar('--app-primary-strong', palette.primaryStrong);
+        setVar('--app-accent', palette.accent);
+        setVar('--app-accent-strong', palette.accentStrong);
+
+        root.style.backgroundColor = palette.background;
+        document.body.style.backgroundColor = palette.background;
+
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeMeta) themeMeta.setAttribute('content', palette.background);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
