@@ -36,9 +36,16 @@ export function AppSkeleton() {
             height: '100%',
           }}
         >
-          <Group style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Burger opened={opened} onClick={toggle} size="sm" ml="xs" />
-            <Text size={isSmall ? 'md' : 'xl'} ml={isSmall ? 0 : 10} component="div">
+          <Group style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              size="sm"
+              ml="xs"
+              style={{ alignSelf: 'center' }}
+              aria-label="Toggle navigation"
+            />
+            <Text size={isSmall ? 'md' : 'xl'}  component="div" mt='-2'>
               {' '}
               ☀️ Sun Clouds ☁️
             </Text>
