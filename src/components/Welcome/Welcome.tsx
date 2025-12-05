@@ -65,7 +65,7 @@ export function Welcome() {
   const dailyRows = weatherForecast?.properties?.periods.map((period: any) => (
     <Table.Tr key={period.name}>
       <Table.Td>{period.name}</Table.Td>
-      <Table.Td>{period.temperature + period.temperatureUnit}</Table.Td>
+      <Table.Td style={{ textAlign: 'right' }}>{period.temperature + period.temperatureUnit}</Table.Td>
     </Table.Tr>
   ));
 
@@ -84,8 +84,8 @@ export function Welcome() {
   const hourlyRows = hourlyWeatherForecast?.properties?.periods.map((period: any) => (
     <Table.Tr key={period.startTime}>
       <Table.Td>{formatHour(period.startTime)}</Table.Td>
-      <Table.Td>{period.probabilityOfPrecipitation.value + "%"}</Table.Td>
-      <Table.Td>{period.temperature + period.temperatureUnit}</Table.Td>
+      <Table.Td style={{ textAlign: 'right' }}>{period.probabilityOfPrecipitation?.value != null ? period.probabilityOfPrecipitation.value + '%' : ''}</Table.Td>
+      <Table.Td style={{ textAlign: 'right' }}>{period.temperature != null ? period.temperature + period.temperatureUnit : ''}</Table.Td>
     </Table.Tr>
   ));
 
@@ -137,7 +137,7 @@ export function Welcome() {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Day</Table.Th>
-              <Table.Th>Temperature</Table.Th>
+              <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{dailyRows}</Table.Tbody>
@@ -161,8 +161,8 @@ export function Welcome() {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Time</Table.Th>
-              <Table.Th>Rain Chance</Table.Th>
-              <Table.Th>Temperature</Table.Th>
+              <Table.Th style={{ textAlign: 'right' }}>Rain Chance</Table.Th>
+              <Table.Th style={{ textAlign: 'right' }}>Temperature</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{hourlyRows}</Table.Tbody>
