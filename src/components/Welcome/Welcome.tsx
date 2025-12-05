@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { AppShell, Burger, Center, Group, Loader, Table, Text, Title } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 
 export function Welcome() {
   const [opened, { toggle }] = useDisclosure();
@@ -129,17 +130,12 @@ export function Welcome() {
             size={isSmall ? 'sm' : 'xl'}
             ta="right"
             mr={10}
+            mt={-10}
             style={{
               textAlign: 'right',
-              maxWidth: isSmall ? '60%' : 400,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
             }}
           >
-            {weatherData
-              ? `Forecast for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
-              : ''}
+            <ColorSchemeToggle/>
           </Text>
         </Group>
       </AppShell.Header>
@@ -165,11 +161,18 @@ export function Welcome() {
             <Loader color="yellow" mt={20} />
           </Center>
         )}
+
+        {/* <ColorSchemeToggle/> */}
       </AppShell.Navbar>
 
       <AppShell.Main>
         <Title order={1} ta="center" mt={5} mb={15}>
-          Hourly Forecast
+          Hourly Forecast {weatherData
+              ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
+              : 'for '}
+              
+          {/* Spinner for location */}
+          {weatherData ? '' : <Loader color="yellow" size="sm" />}
         </Title>
 
         {/* return loading circle conditionally if the API call hasnt returned yet */}
