@@ -25,7 +25,9 @@ function ThemeVariablesSync() {
     document.body.style.backgroundColor = palette.background;
 
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) themeMeta.setAttribute('content', palette.background);
+    if (themeMeta) {
+      themeMeta.setAttribute('content', palette.background);
+    }
   }, [colorScheme]);
 
   return null;
