@@ -102,7 +102,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
 
       {hasPrecip && (
         <Paper withBorder shadow="sm" radius="md" p="md" mb="xl">
-          <Text size="sm" fw={600} ta="center">
+          <Text size="sm" fw={600} ta="center" mb="xs">
             There&apos;s a chance of rain in the next {hoursToShow} hours!
           </Text>
           <LineChart

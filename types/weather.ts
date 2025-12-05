@@ -26,6 +26,7 @@ export interface Period {
   probabilityOfPrecipitation?: PrecipitationProbability;
   temperature?: number | null;
   temperatureUnit?: string;
+  windSpeed: string | null;
 }
 
 export interface ForecastProperties {

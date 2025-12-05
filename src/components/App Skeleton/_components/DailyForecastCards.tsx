@@ -1,4 +1,4 @@
-import { Card, Center, Loader, ScrollArea, Text, Title } from '@mantine/core';
+import { Card, Center, Divider, Loader, ScrollArea, Text, Title } from '@mantine/core';
 import { Period } from '../../../../types/weather';
 
 interface DailyForecastCardsProps {
@@ -31,13 +31,18 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
           key={period.name}
           style={{ display: 'flex', flexDirection: 'column', height: 'auto', overflow: 'visible' }}
         >
-          <Card.Section>
-            <Text size="md" mt="xs" mb="xs" ta="center">
-              {period.name}
-            </Text>
-          </Card.Section>
+          <Text size="md" ta="center">
+            {period.name}
+          </Text>
 
-          <Text size="xs" ta="center">
+          <Divider my="xs" />
+
+          <Text size="xs">🌡️ Average Temp: {period.temperature || 'NO AVERAGE TEMP??'}</Text>
+          <Text size="xs" mb="xs">
+            🍃 Wind Speed: {period.windSpeed || 'NO WIND SPEED??'}
+          </Text>
+
+          <Text size="xs">
             {period.detailedForecast ||
               "No summary available :( I guess you're gonna have to look outside..."}
           </Text>
