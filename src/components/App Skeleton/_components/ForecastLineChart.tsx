@@ -3,17 +3,16 @@ import { Paper, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { Period } from '../../../../types/weather';
 
+type ChartTooltipProps = {
+  label?: React.ReactNode;
+  payload?: ReadonlyArray<{ name?: string; value?: unknown; color?: string }>;
+};
+
 interface ForecastLineChartProps {
   data?: Period[];
 }
 
-const ChartTooltip = ({
-  label,
-  payload,
-}: {
-  label: React.ReactNode;
-  payload?: ReadonlyArray<Record<string, any>>;
-}) => {
+const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
   const filtered = getFilteredChartTooltipPayload(Array.from(payload ?? []));
   if (!filtered.length) {
     return null;
@@ -93,11 +92,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
         yAxisProps={{ domain: [minTemp ?? 'auto', maxTemp ?? 'auto'] }}
         valueFormatter={(value) => `${value}°F`}
         tooltipAnimationDuration={200}
-        tooltipProps={{
-          content: ({ label, payload }) => (
-            <ChartTooltip label={label} payload={payload as ReadonlyArray<Record<string, any>>} />
-          ),
-        }}
+        tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
         dotProps={{ r: 3 }}
       />
 
@@ -130,14 +125,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             yAxisProps={{ domain: [0, 100], tickMargin: 8 }}
             valueFormatter={(value) => `${value}%`}
             tooltipAnimationDuration={200}
-            tooltipProps={{
-              content: ({ label, payload }) => (
-                <ChartTooltip
-                  label={label}
-                  payload={payload as ReadonlyArray<Record<string, any>>}
-                />
-              ),
-            }}
+            tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
             dotProps={{ r: 3 }}
             activeDotProps={{ r: 5, strokeWidth: 1 }}
           />
