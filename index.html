@@ -8,6 +8,23 @@
       content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
     />
     <title>Sun Clouds</title>
+    <script>
+      // Apply stored or preferred color scheme before React renders, this will avoid color flashes when loading
+      (() => {
+        const storageKey = 'mantine-color-scheme-value';
+        const stored = localStorage.getItem(storageKey);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const scheme = (stored ?? 'auto').toLowerCase() === 'auto'
+          ? (prefersDark ? 'dark' : 'light')
+          : (stored ?? 'light').toLowerCase();
+
+        const root = document.documentElement;
+        root.setAttribute('data-mantine-color-scheme', scheme);
+        const bg = scheme === 'dark' ? '#242424' : '#ffffff';
+        root.style.backgroundColor = bg;
+        document.body.style.backgroundColor = bg;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

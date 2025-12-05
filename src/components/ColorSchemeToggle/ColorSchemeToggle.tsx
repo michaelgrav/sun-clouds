@@ -1,4 +1,4 @@
-import { Button, Group, useMantineColorScheme, NativeSelect } from '@mantine/core';
+import { useMantineColorScheme, NativeSelect } from '@mantine/core';
 
 export function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
