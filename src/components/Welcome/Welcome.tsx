@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { AppShell, Burger, Table, Title } from '@mantine/core';
+import { AppShell, Burger, Loader, Table, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 export function Welcome() {
@@ -101,15 +101,27 @@ export function Welcome() {
 
         <div>Sun Clouds</div>
         <div>
-          Forecast for {weatherData?.properties?.relativeLocation?.properties?.city},
-          {weatherData?.properties?.relativeLocation?.properties?.state}
+          {
+            weatherData ?
+            
+          "Forecast for " + weatherData?.properties?.relativeLocation?.properties?.city + ", " +
+          weatherData?.properties?.relativeLocation?.properties?.state
+          
+          :
+
+          ""
+          }
         </div>
       </AppShell.Header>
 
       <AppShell.Navbar>
+
         <Title order={5} ta="center" mt={50}>
           7-Day Forecast
         </Title>
+
+        {/* return loading circle conditionally if the API call hasnt returned yet */}
+        { dailyRows ?
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -118,7 +130,10 @@ export function Welcome() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{dailyRows}</Table.Tbody>
-        </Table>
+        </Table> :
+
+        <Loader color="yellow" />
+        }
       </AppShell.Navbar>
 
       <AppShell.Main>
@@ -126,6 +141,8 @@ export function Welcome() {
           Hourly Forecast
         </Title>
 
+        {/* return loading circle conditionally if the API call hasnt returned yet */}
+        { hourlyRows ? 
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -134,7 +151,10 @@ export function Welcome() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{hourlyRows}</Table.Tbody>
-        </Table>
+        </Table> :
+
+         <Loader color="yellow" size="lg" />
+        }
 
         {/* Table for the hourly forecast */}
       </AppShell.Main>
