@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { AppShell, Burger, Card, Center, Divider, Group, Loader, Table, Text, Title } from '@mantine/core';
+import { AppShell, Burger, Card, Center, Divider, Group, Loader, ScrollArea, Table, Text, Title } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 
@@ -76,12 +76,12 @@ export function AppSkeleton() {
       style={{ display: 'flex', flexDirection: 'column', height: 'auto', overflow: 'visible' }}
     >
       <Card.Section>
-        <Text size="md" mb="xs" ta="center">
+        <Text size="md" mt="xs" mb="xs" ta="center">
           {period.name}
         </Text>
       </Card.Section>
 
-      <Text size="xs" style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
+      <Text size="xs">
         {period.detailedForecast ||
           'No summary available :( I guess you\'re gonna have to look outside...'}
       </Text>
@@ -157,20 +157,20 @@ export function AppSkeleton() {
       </AppShell.Header>
 
       <AppShell.Navbar>
-        <Title order={5} ta="center" mt={25} mb={15}>
-          7-Day Forecast
-        </Title>
+        <ScrollArea h="100%" offsetScrollbars>
+          <Title order={5} ta="center" mt={25} mb={15}>
+            7-Day Forecast
+          </Title>
 
-        {/* return loading circle conditionally if the API call hasn't returned yet */}
-        {dailyCards ? (
-          dailyCards
-        ) : (
-          <Center>
-            <Loader color="yellow" mt={20} />
-          </Center>
-        )}
-
-        {/* <ColorSchemeToggle/> */}
+          {/* return loading circle conditionally if the API call hasn't returned yet */}
+          {dailyCards ? (
+            dailyCards
+          ) : (
+            <Center>
+              <Loader color="yellow" mt={20} />
+            </Center>
+          )}
+        </ScrollArea>
       </AppShell.Navbar>
 
       <AppShell.Main>
