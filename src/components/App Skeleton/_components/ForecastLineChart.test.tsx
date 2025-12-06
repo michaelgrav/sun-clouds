@@ -18,6 +18,16 @@ const buildPeriod = (overrides: Partial<any> = {}) => ({
 });
 
 describe('ForecastLineChart', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    // Set current time to Jan 1, 2024 8:00 AM so test data (noon) is in the future window
+    vi.setSystemTime(new Date(2024, 0, 1, 8, 0, 0));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders temperature and precipitation charts when data exists', () => {
     const data = [
       buildPeriod({ temperature: 70, probabilityOfPrecipitation: { value: 20 } }),
