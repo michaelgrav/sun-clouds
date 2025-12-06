@@ -7,6 +7,8 @@ interface WeatherState {
   weatherForecast: ForecastResponse | null;
   hourlyWeatherForecast: ForecastResponse | null;
   activeAlerts: AlertsResponse['features'];
+  latitude: number | null;
+  longitude: number | null;
   isLoading: boolean;
 }
 
@@ -92,6 +94,8 @@ export const useWeatherData = (): WeatherState => {
     weatherForecast,
     hourlyWeatherForecast,
     activeAlerts,
+    latitude,
+    longitude,
     isLoading,
   };
 };

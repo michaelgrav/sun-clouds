@@ -7,12 +7,14 @@ import { DailyForecastCards } from './_components/DailyForecastCards';
 import ForecastLineChart from './_components/ForecastLineChart';
 import { HourlyTables } from './_components/HourlyTables';
 import WeatherAlertsCard from './_components/WeatherAlertsCard';
+import WeatherRadarModal from './_components/WeatherRadarModal';
 
 export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
   const isSmall = useMediaQuery('(max-width: 768px)');
 
-  const { weatherData, weatherForecast, hourlyWeatherForecast, activeAlerts } = useWeatherData();
+  const { weatherData, weatherForecast, hourlyWeatherForecast, activeAlerts, latitude, longitude } =
+    useWeatherData();
 
   const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
   const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
@@ -97,6 +99,8 @@ export function AppSkeleton() {
           </Center>
         )}
       </AppShell.Main>
+
+      <WeatherRadarModal latitude={latitude} longitude={longitude} />
     </AppShell>
   );
 }
