@@ -14,5 +14,4 @@ export interface SummarySectionProps {
 export interface HourlyForecastSectionProps {
   hourlyPeriods?: Period[] | null;
   locationLabel: string | null;
-  hasHourlyData: boolean;
 }

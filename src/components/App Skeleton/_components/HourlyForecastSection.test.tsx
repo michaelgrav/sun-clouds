@@ -15,9 +15,7 @@ describe('HourlyForecastSection', () => {
   });
 
   it('shows skeletons when data is missing', () => {
-    render(
-      <HourlyForecastSection hourlyPeriods={undefined} locationLabel={null} hasHourlyData={false} />
-    );
+    render(<HourlyForecastSection hourlyPeriods={undefined} locationLabel={null} />);
 
     expect(screen.getByTestId('location-skeleton')).toBeInTheDocument();
     expect(screen.getByTestId('forecast-line-skeleton')).toBeInTheDocument();
@@ -53,12 +51,44 @@ describe('HourlyForecastSection', () => {
           },
         ]}
         locationLabel="Portland, OR"
-        hasHourlyData
       />
     );
 
     expect(screen.getByText(/Hourly Forecast for Portland, OR/)).toBeInTheDocument();
     expect(screen.getByText('Today')).toBeInTheDocument();
     expect(screen.getByText(tomorrowLabel)).toBeInTheDocument();
+  });
+
+  it('omits past hourly periods', () => {
+    vi.setSystemTime(new Date(2024, 0, 1, 11, 15, 0));
+
+    render(
+      <HourlyForecastSection
+        hourlyPeriods={[
+          {
+            startTime: new Date(2024, 0, 1, 10, 0, 0).toISOString(),
+            temperature: 60,
+            temperatureUnit: 'F',
+            probabilityOfPrecipitation: { value: 30 },
+            windSpeed: '4 mph',
+            name: 'Past',
+            detailedForecast: 'Past hour',
+          },
+          {
+            startTime: new Date(2024, 0, 1, 12, 0, 0).toISOString(),
+            temperature: 70,
+            temperatureUnit: 'F',
+            probabilityOfPrecipitation: { value: 10 },
+            windSpeed: '6 mph',
+            name: 'Upcoming',
+            detailedForecast: 'Future hour',
+          },
+        ]}
+        locationLabel="Testville, TX"
+      />
+    );
+
+    expect(screen.queryByText('10 AM')).toBeNull();
+    expect(screen.getByText('12 PM')).toBeInTheDocument();
   });
 });

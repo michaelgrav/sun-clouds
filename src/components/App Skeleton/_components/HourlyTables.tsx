@@ -1,5 +1,6 @@
 import { Card, Table, Text } from '@mantine/core';
 import { formatHour } from '../../../../lib/time/formatHour';
+import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
 import { getWeatherEmoji } from '../../../../lib/weather/getWeatherEmoji';
 import { groupHourlyPeriodsByDay } from '../../../../lib/weather/groupHourlyPeriods';
 import { Period } from '../../../../types/weather';
@@ -11,11 +12,15 @@ interface HourlyTablesProps {
 }
 
 export const HourlyTables = ({ periods, maxHours = 48 }: HourlyTablesProps) => {
-  if (!periods?.length) {
+  const now = new Date();
+  const activePeriods = filterActivePeriods(periods ?? [], now);
+
+  if (!activePeriods.length) {
     return null;
   }
 
-  const grouped = groupHourlyPeriodsByDay(periods, maxHours);
+  const limitedPeriods = activePeriods.slice(0, maxHours);
+  const grouped = groupHourlyPeriodsByDay(limitedPeriods, maxHours, now);
 
   return (
     <>

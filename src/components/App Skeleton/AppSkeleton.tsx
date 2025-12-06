@@ -27,7 +27,6 @@ export function AppSkeleton() {
   const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
   const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
   const summary = weatherForecast?.properties?.periods?.[0]?.detailedForecast;
-  const hasHourlyData = Boolean(hourlyPeriods?.length);
   const locationLabel = weatherData
     ? `${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
     : null;
@@ -53,11 +52,7 @@ export function AppSkeleton() {
 
         <Divider my="md" variant="dotted" size="md" />
 
-        <HourlyForecastSection
-          hourlyPeriods={hourlyPeriods}
-          locationLabel={locationLabel}
-          hasHourlyData={hasHourlyData}
-        />
+        <HourlyForecastSection hourlyPeriods={hourlyPeriods} locationLabel={locationLabel} />
       </AppShell.Main>
 
       <LocationSearchButton

@@ -1,4 +1,5 @@
 import { Card, Skeleton, Stack, Title } from '@mantine/core';
+import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
 import { HourlyForecastSectionProps } from '../../../../types/appSkeleton';
 import ForecastLineChart from './ForecastLineChart';
 import { HourlyTables } from './HourlyTables';
@@ -6,36 +7,40 @@ import { HourlyTables } from './HourlyTables';
 export const HourlyForecastSection = ({
   hourlyPeriods,
   locationLabel,
-  hasHourlyData,
-}: HourlyForecastSectionProps) => (
-  <>
-    <Stack gap="sm" align="center" mb="md">
-      <Title order={1} ta="center" mt={10} mb={4}>
-        Hourly Forecast for{' '}
-        {locationLabel ? (
-          locationLabel
-        ) : (
-          <Skeleton
-            width={160}
-            height={18}
-            radius="xl"
-            display="inline-block"
-            data-testid="location-skeleton"
-            style={{ verticalAlign: 'middle' }}
-          />
-        )}
-      </Title>
-    </Stack>
+}: HourlyForecastSectionProps) => {
+  const activeHourlyPeriods = filterActivePeriods(hourlyPeriods ?? []);
+  const hasActiveHourlyData = activeHourlyPeriods.length > 0;
 
-    <ForecastLineChart data={hourlyPeriods ?? undefined} />
+  return (
+    <>
+      <Stack gap="sm" align="center" mb="md">
+        <Title order={1} ta="center" mt={10} mb={4}>
+          Hourly Forecast for{' '}
+          {locationLabel ? (
+            locationLabel
+          ) : (
+            <Skeleton
+              width={160}
+              height={18}
+              radius="xl"
+              display="inline-block"
+              data-testid="location-skeleton"
+              style={{ verticalAlign: 'middle' }}
+            />
+          )}
+        </Title>
+      </Stack>
 
-    {hasHourlyData ? (
-      <HourlyTables periods={hourlyPeriods ?? undefined} />
-    ) : (
-      <HourlyTablesSkeleton />
-    )}
-  </>
-);
+      <ForecastLineChart data={activeHourlyPeriods} />
+
+      {hasActiveHourlyData ? (
+        <HourlyTables periods={activeHourlyPeriods} />
+      ) : (
+        <HourlyTablesSkeleton />
+      )}
+    </>
+  );
+};
 
 export const HourlyTablesSkeleton = () => (
   <Stack gap="md" data-testid="hourly-table-skeletons" mt="md">

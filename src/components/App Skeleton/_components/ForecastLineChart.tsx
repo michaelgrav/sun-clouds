@@ -8,6 +8,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
 import { Period } from '../../../../types/weather';
 
 type ChartTooltipProps = {
@@ -47,8 +48,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   const colorScheme = useComputedColorScheme('light');
 
   const now = new Date();
-  const currentHourStart = new Date(now);
-  currentHourStart.setMinutes(0, 0, 0);
+  const filteredPeriods = filterActivePeriods(data ?? [], now);
 
   const cardStyle = {
     background:
@@ -77,20 +77,14 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
     );
   }
 
-  const chartData = data
-    .filter((period) => {
-      const start = new Date(period.startTime);
-      return start >= currentHourStart;
-    })
-    .slice(0, hoursToShow)
-    .map((period) => {
-      const date = new Date(period.startTime);
-      return {
-        date: date.toLocaleTimeString([], { hour: 'numeric' }),
-        temperature: period.temperature,
-        precipitation: period.probabilityOfPrecipitation?.value ?? null,
-      };
-    });
+  const chartData = filteredPeriods.slice(0, hoursToShow).map((period) => {
+    const date = new Date(period.startTime);
+    return {
+      date: date.toLocaleTimeString([], { hour: 'numeric' }),
+      temperature: period.temperature,
+      precipitation: period.probabilityOfPrecipitation?.value ?? null,
+    };
+  });
 
   const temps = chartData
     .map((point) => point.temperature)

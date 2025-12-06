@@ -22,6 +22,7 @@ export interface PrecipitationProbability {
 
 export interface Period {
   startTime: string;
+  endTime?: string;
   name?: string;
   detailedForecast?: string;
   probabilityOfPrecipitation?: PrecipitationProbability;
