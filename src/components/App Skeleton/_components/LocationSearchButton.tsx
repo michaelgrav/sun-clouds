@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { ActionIcon, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Group,
+  Modal,
+  Stack,
+  Text,
+  TextInput,
+  useComputedColorScheme,
+  useMantineTheme,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 interface LocationSearchButtonProps {
@@ -82,6 +92,16 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
     }
   };
 
+  const theme = useMantineTheme();
+  const colorScheme = useComputedColorScheme('light');
+
+  const modalGradient =
+    colorScheme === 'dark'
+      ? `linear-gradient(135deg, ${theme.colors.sky[8]}, ${theme.colors.sunshine[6]})`
+      : `linear-gradient(135deg, ${theme.colors.sky[1]}, ${theme.colors.sunshine[2]})`;
+
+  const accentWash = `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%)`;
+
   return (
     <>
       <Modal
@@ -96,9 +116,29 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
             Search by City & State
           </Text>
         }
+        styles={{
+          content: {
+            backgroundImage: `${accentWash}, ${modalGradient}`,
+            border: `1px solid ${colorScheme === 'dark' ? theme.colors.sky[7] : theme.colors.sky[2]}`,
+            boxShadow: '0 18px 48px rgba(0, 0, 0, 0.32)',
+          },
+          header: { justifyContent: 'center', background: 'transparent' },
+          title: { width: '100%', textAlign: 'center' },
+          body: { background: 'transparent', paddingBottom: 16 },
+        }}
       >
-        <form onSubmit={handleSubmit}>
-          <Stack gap="sm">
+        <form onSubmit={handleSubmit} style={{ padding: '0.25rem 0.5rem 0.5rem' }}>
+          <Stack
+            gap="sm"
+            style={{
+              padding: 12,
+              borderRadius: 12,
+              background:
+                colorScheme === 'dark' ? 'rgba(14, 23, 36, 0.75)' : 'rgba(247, 251, 255, 0.72)',
+              border: `1px solid ${colorScheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}`,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+            }}
+          >
             <TextInput
               label="City"
               placeholder="e.g. Cypress"
