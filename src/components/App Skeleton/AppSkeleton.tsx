@@ -48,13 +48,13 @@ export function AppSkeleton() {
 
   const barBackground =
     colorScheme === 'dark'
-      ? `linear-gradient(135deg, rgba(255, 212, 108, 0.12), rgba(255, 180, 41, 0.24))`
-      : `linear-gradient(135deg, ${theme.colors.sunshine[0]}, ${theme.colors.sunshine[2]})`;
+      ? `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%), linear-gradient(135deg, ${theme.colors.sky[8]}, ${theme.colors.sunshine[6]})`
+      : `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%), linear-gradient(135deg, ${theme.colors.sky[1]}, ${theme.colors.sunshine[2]})`;
 
   const barBorder =
     colorScheme === 'dark'
-      ? '1px solid rgba(255, 212, 108, 0.25)'
-      : `1px solid ${theme.colors.sunshine[3]}`;
+      ? `1px solid ${theme.colors.sky[7]}`
+      : `1px solid ${theme.colors.sky[2]}`;
 
   const barShadow =
     colorScheme === 'dark'
