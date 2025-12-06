@@ -65,11 +65,11 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   if (!data?.length) {
     return (
       <Stack gap="md" data-testid="forecast-line-skeleton" mb="xl">
-        <Paper withBorder shadow="sm" radius="md" p="md" style={cardStyle}>
+        <Paper withBorder shadow="sm" radius="md" p="md">
           <Skeleton height={18} width="40%" mb="sm" radius="sm" />
           <Skeleton height={300} radius="md" />
         </Paper>
-        <Paper withBorder shadow="sm" radius="md" p="md" style={cardStyle}>
+        <Paper withBorder shadow="sm" radius="md" p="md">
           <Skeleton height={14} width="35%" mb="sm" radius="sm" />
           <Skeleton height={200} radius="md" />
         </Paper>
