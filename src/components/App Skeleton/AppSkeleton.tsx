@@ -1,4 +1,4 @@
-import { AppShell, Divider } from '@mantine/core';
+import { AppShell, Skeleton, Stack, Title } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useWeatherData } from '../../hooks/useWeatherData';
 import { AppHeader } from './_components/AppHeader';
@@ -48,11 +48,33 @@ export function AppSkeleton() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <SummarySection summary={summary} alerts={activeAlerts} />
+        <Stack gap="md">
+          <Stack gap="sm" align="center" mb="xs">
+            <Title order={1} ta="center" mt={4} mb={0}>
+              Forecast for{' '}
+              {locationLabel ? (
+                locationLabel
+              ) : (
+                <Skeleton
+                  width={180}
+                  height={20}
+                  radius="xl"
+                  display="inline-block"
+                  data-testid="location-skeleton"
+                  style={{ verticalAlign: 'middle' }}
+                />
+              )}
+            </Title>
+          </Stack>
 
-        <Divider my="md" variant="dotted" size="md" />
+          <SummarySection
+            summary={summary}
+            alerts={activeAlerts}
+            hourlyPeriods={hourlyPeriods ?? null}
+          />
 
-        <HourlyForecastSection hourlyPeriods={hourlyPeriods} locationLabel={locationLabel} />
+          <HourlyForecastSection hourlyPeriods={hourlyPeriods} />
+        </Stack>
       </AppShell.Main>
 
       <LocationSearchButton

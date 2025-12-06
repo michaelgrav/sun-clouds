@@ -1,36 +1,15 @@
-import { Card, Skeleton, Stack, Title } from '@mantine/core';
+import { Card, Skeleton, Stack } from '@mantine/core';
 import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
 import { HourlyForecastSectionProps } from '../../../../types/appSkeleton';
 import ForecastLineChart from './ForecastLineChart';
 import { HourlyTables } from './HourlyTables';
 
-export const HourlyForecastSection = ({
-  hourlyPeriods,
-  locationLabel,
-}: HourlyForecastSectionProps) => {
+export const HourlyForecastSection = ({ hourlyPeriods }: HourlyForecastSectionProps) => {
   const activeHourlyPeriods = filterActivePeriods(hourlyPeriods ?? []);
   const hasActiveHourlyData = activeHourlyPeriods.length > 0;
 
   return (
     <>
-      <Stack gap="sm" align="center" mb="md">
-        <Title order={1} ta="center" mt={10} mb={4}>
-          Hourly Forecast for{' '}
-          {locationLabel ? (
-            locationLabel
-          ) : (
-            <Skeleton
-              width={160}
-              height={18}
-              radius="xl"
-              display="inline-block"
-              data-testid="location-skeleton"
-              style={{ verticalAlign: 'middle' }}
-            />
-          )}
-        </Title>
-      </Stack>
-
       <ForecastLineChart data={activeHourlyPeriods} />
 
       {hasActiveHourlyData ? (

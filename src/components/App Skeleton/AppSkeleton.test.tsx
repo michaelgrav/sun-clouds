@@ -89,7 +89,7 @@ describe('AppSkeleton', () => {
 
     expect(screen.getByText('Current Weather Summary')).toBeInTheDocument();
     expect(screen.getByText('Sunny with light breeze')).toBeInTheDocument();
-    expect(screen.getByText(/Hourly Forecast for Portland, OR/)).toBeInTheDocument();
+    expect(screen.getByText(/Forecast for Portland, OR/)).toBeInTheDocument();
 
     expect(screen.getByText('Today')).toBeInTheDocument();
     expect(screen.getByText(tomorrowLabel)).toBeInTheDocument();
