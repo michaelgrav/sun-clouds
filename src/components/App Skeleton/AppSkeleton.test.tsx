@@ -31,13 +31,18 @@ describe('AppSkeleton', () => {
       longitude: null,
       setCoordinates: vi.fn(),
       isLoading: true,
+      errors: {},
+      geolocationDenied: false,
+      selectedLocationLabel: null,
+      clearErrors: vi.fn(),
+      dismissGeolocationWarning: vi.fn(),
     });
 
     render(<AppSkeleton />);
 
     expect(screen.getByTestId('location-skeleton')).toBeInTheDocument();
     expect(screen.getByTestId('summary-skeleton')).toBeInTheDocument();
-    expect(screen.getByTestId('forecast-line-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('forecast-line-suspense')).toBeInTheDocument();
   });
 
   it('renders summary, location, and grouped hourly tables', () => {
@@ -83,13 +88,18 @@ describe('AppSkeleton', () => {
       longitude: -74,
       setCoordinates: vi.fn(),
       isLoading: false,
+      errors: {},
+      geolocationDenied: false,
+      selectedLocationLabel: null,
+      clearErrors: vi.fn(),
+      dismissGeolocationWarning: vi.fn(),
     });
 
     render(<AppSkeleton />);
 
     expect(screen.getByText('Current Weather Summary')).toBeInTheDocument();
-    expect(screen.getByText('Sunny with light breeze')).toBeInTheDocument();
-    expect(screen.getByText(/Hourly Forecast for Portland, OR/)).toBeInTheDocument();
+    expect(screen.getByText(/Sunny with light breeze/)).toBeInTheDocument();
+    expect(screen.getByText(/Forecast for Portland, OR/)).toBeInTheDocument();
 
     expect(screen.getByText('Today')).toBeInTheDocument();
     expect(screen.getByText(tomorrowLabel)).toBeInTheDocument();

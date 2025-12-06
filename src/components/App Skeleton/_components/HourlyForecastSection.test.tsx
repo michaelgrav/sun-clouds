@@ -15,10 +15,9 @@ describe('HourlyForecastSection', () => {
   });
 
   it('shows skeletons when data is missing', () => {
-    render(<HourlyForecastSection hourlyPeriods={undefined} locationLabel={null} />);
+    render(<HourlyForecastSection hourlyPeriods={undefined} />);
 
-    expect(screen.getByTestId('location-skeleton')).toBeInTheDocument();
-    expect(screen.getByTestId('forecast-line-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('forecast-line-suspense')).toBeInTheDocument();
     expect(screen.getByTestId('hourly-table-skeletons')).toBeInTheDocument();
   });
 
@@ -50,11 +49,9 @@ describe('HourlyForecastSection', () => {
             detailedForecast: 'Clear',
           },
         ]}
-        locationLabel="Portland, OR"
       />
     );
 
-    expect(screen.getByText(/Hourly Forecast for Portland, OR/)).toBeInTheDocument();
     expect(screen.getByText('Today')).toBeInTheDocument();
     expect(screen.getByText(tomorrowLabel)).toBeInTheDocument();
   });
@@ -84,7 +81,6 @@ describe('HourlyForecastSection', () => {
             detailedForecast: 'Future hour',
           },
         ]}
-        locationLabel="Testville, TX"
       />
     );
 

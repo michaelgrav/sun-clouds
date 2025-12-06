@@ -3,10 +3,14 @@ import { SummarySectionProps } from '../../../../types/appSkeleton';
 import { CurrentSummaryCard } from './CurrentSummaryCard';
 import WeatherAlertsCard from './WeatherAlertsCard';
 
-export const SummarySection = ({ summary, alerts }: SummarySectionProps) => (
+export const SummarySection = ({ summary, alerts, hourlyPeriods }: SummarySectionProps) => (
   <>
     <WeatherAlertsCard alerts={alerts} />
-    {summary ? <CurrentSummaryCard summary={summary} /> : <SummarySkeleton />}
+    {summary ? (
+      <CurrentSummaryCard summary={summary} hourlyPeriods={hourlyPeriods ?? undefined} />
+    ) : (
+      <SummarySkeleton />
+    )}
   </>
 );
 

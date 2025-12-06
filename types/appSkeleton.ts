@@ -9,9 +9,9 @@ export interface AppHeaderProps {
 export interface SummarySectionProps {
   summary?: string | null;
   alerts?: AlertFeature[];
+  hourlyPeriods?: Period[] | null;
 }
 
 export interface HourlyForecastSectionProps {
   hourlyPeriods?: Period[] | null;
-  locationLabel: string | null;
 }

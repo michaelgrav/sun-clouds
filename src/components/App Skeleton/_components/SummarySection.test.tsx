@@ -24,7 +24,7 @@ describe('SummarySection', () => {
     );
 
     expect(screen.getByText('Current Weather Summary')).toBeInTheDocument();
-    expect(screen.getByText('Sunny skies and a light breeze')).toBeInTheDocument();
+    expect(screen.getByText(/Sunny skies and a light breeze/)).toBeInTheDocument();
     expect(screen.getByText('Active Weather Alerts')).toBeInTheDocument();
     expect(screen.getByText('Test Alert')).toBeInTheDocument();
   });

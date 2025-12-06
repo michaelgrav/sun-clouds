@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { getFilteredChartTooltipPayload, LineChart } from '@mantine/charts';
 import {
   Paper,
@@ -47,62 +48,103 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
 
-  const now = new Date();
-  const filteredPeriods = filterActivePeriods(data ?? [], now);
+  const now = useMemo(() => new Date(), []);
 
-  const cardStyle = {
-    background:
-      colorScheme === 'dark'
-        ? 'linear-gradient(135deg, #162235 0%, #0e1724 100%)'
-        : 'linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%)',
-    border: `1px solid ${colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.35)' : '#a9d4ff'}`,
-    boxShadow:
-      colorScheme === 'dark'
-        ? '0 10px 24px rgba(0,0,0,0.35)'
-        : '0 8px 20px rgba(10, 68, 122, 0.08)',
-  } as const;
+  const filteredPeriods = useMemo(() => filterActivePeriods(data ?? [], now), [data, now]);
 
-  if (!data?.length) {
+  const chartData = useMemo(
+    () =>
+      filteredPeriods.slice(0, hoursToShow).map((period) => {
+        const date = new Date(period.startTime);
+        return {
+          date: date.toLocaleTimeString([], { hour: 'numeric' }),
+          temperature: period.temperature,
+          precipitation: period.probabilityOfPrecipitation?.value ?? null,
+        };
+      }),
+    [filteredPeriods, hoursToShow]
+  );
+
+  const { minTemp, maxTemp, hasPrecip } = useMemo(() => {
+    const temps = chartData
+      .map((point) => point.temperature)
+      .filter((t): t is number => typeof t === 'number');
+
+    const minTempRaw = temps.length ? Math.min(...temps) : undefined;
+    const maxTempRaw = temps.length ? Math.max(...temps) : undefined;
+
+    const buffer = 10;
+    const bufferedMin =
+      minTempRaw != null && maxTempRaw != null ? Math.floor(minTempRaw - buffer) : minTempRaw;
+    const bufferedMax =
+      minTempRaw != null && maxTempRaw != null ? Math.ceil(maxTempRaw + buffer) : maxTempRaw;
+
+    const precipPresent = chartData.some(
+      (point) => typeof point.precipitation === 'number' && point.precipitation > 0
+    );
+
+    return { minTemp: bufferedMin, maxTemp: bufferedMax, hasPrecip: precipPresent } as const;
+  }, [chartData]);
+
+  const temperatureSeries = useMemo(
+    () => [
+      {
+        name: 'temperature',
+        label: 'Temperature',
+        color: colorScheme === 'dark' ? '#ffb429' : '#ffb429',
+      },
+    ],
+    [colorScheme]
+  );
+
+  const precipSeries = useMemo(
+    () => [
+      {
+        name: 'precipitation',
+        label: 'Precipitation',
+        color: colorScheme === 'dark' ? theme.colors.sky[3] : theme.colors.sky[5],
+        strokeDasharray: '6 3',
+      },
+    ],
+    [colorScheme, theme.colors.sky]
+  );
+
+  const cardStyle = useMemo(
+    () =>
+      ({
+        background:
+          colorScheme === 'dark'
+            ? 'linear-gradient(135deg, #162235 0%, #0e1724 100%)'
+            : 'linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%)',
+        border: `1px solid ${colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.35)' : '#a9d4ff'}`,
+        boxShadow:
+          colorScheme === 'dark'
+            ? '0 10px 24px rgba(0,0,0,0.35)'
+            : '0 8px 20px rgba(10, 68, 122, 0.08)',
+      }) as const,
+    [colorScheme]
+  );
+
+  const shouldShowSkeleton = !chartData.length;
+
+  if (shouldShowSkeleton) {
     return (
       <Stack gap="md" data-testid="forecast-line-skeleton" mb="xl">
         <Paper withBorder shadow="sm" radius="md" p="md">
+          <Skeleton height={14} width="32%" mb={8} radius="xl" />
           <Skeleton height={18} width="40%" mb="sm" radius="sm" />
+          <Skeleton height={12} width="48%" mb="sm" radius="xl" />
           <Skeleton height={300} radius="md" />
         </Paper>
         <Paper withBorder shadow="sm" radius="md" p="md">
-          <Skeleton height={14} width="35%" mb="sm" radius="sm" />
+          <Skeleton height={12} width="28%" mb={8} radius="xl" />
+          <Skeleton height={14} width="35%" mb={8} radius="sm" />
+          <Skeleton height={12} width="44%" mb="sm" radius="xl" />
           <Skeleton height={200} radius="md" />
         </Paper>
       </Stack>
     );
   }
-
-  const chartData = filteredPeriods.slice(0, hoursToShow).map((period) => {
-    const date = new Date(period.startTime);
-    return {
-      date: date.toLocaleTimeString([], { hour: 'numeric' }),
-      temperature: period.temperature,
-      precipitation: period.probabilityOfPrecipitation?.value ?? null,
-    };
-  });
-
-  const temps = chartData
-    .map((point) => point.temperature)
-    .filter((t): t is number => typeof t === 'number');
-
-  const minTempRaw = temps.length ? Math.min(...temps) : undefined;
-  const maxTempRaw = temps.length ? Math.max(...temps) : undefined;
-
-  // Add a larger buffer so the line is not clipped at chart edges.
-  const buffer = 10;
-  const minTemp =
-    minTempRaw != null && maxTempRaw != null ? Math.floor(minTempRaw - buffer) : minTempRaw;
-  const maxTemp =
-    minTempRaw != null && maxTempRaw != null ? Math.ceil(maxTempRaw + buffer) : maxTempRaw;
-
-  const hasPrecip = chartData.some(
-    (point) => typeof point.precipitation === 'number' && point.precipitation > 0
-  );
 
   return (
     <>
@@ -119,13 +161,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
           h={360}
           data={chartData}
           dataKey="date"
-          series={[
-            {
-              name: 'temperature',
-              label: 'Temperature',
-              color: colorScheme === 'dark' ? '#ffb429' : '#ffb429',
-            },
-          ]}
+          series={temperatureSeries}
           lineChartProps={{
             // Keep charts visually aligned but do not sync tooltips between charts
             margin: { top: 12, right: 36, left: 16, bottom: 16 },
@@ -156,14 +192,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             h={240}
             data={chartData}
             dataKey="date"
-            series={[
-              {
-                name: 'precipitation',
-                label: 'Precipitation',
-                color: colorScheme === 'dark' ? theme.colors.sky[3] : theme.colors.sky[5],
-                strokeDasharray: '6 3',
-              },
-            ]}
+            series={precipSeries}
             lineChartProps={{
               // Keep charts visually aligned but do not sync tooltips between charts
               margin: { top: 12, right: 36, left: 16, bottom: 16 },
