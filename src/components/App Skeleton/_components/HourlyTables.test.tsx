@@ -10,12 +10,16 @@ const periods = [
     temperature: 70,
     temperatureUnit: 'F',
     probabilityOfPrecipitation: { value: 10 },
+    shortForecast: 'Patchy Fog',
+    icon: 'https://api.weather.gov/icons/land/day/fog?size=small',
   },
   {
     startTime: new Date(2024, 0, 2, 12, 0, 0).toISOString(),
     temperature: 58,
     temperatureUnit: 'F',
     probabilityOfPrecipitation: { value: 20 },
+    shortForecast: 'Mostly Sunny',
+    icon: 'https://api.weather.gov/icons/land/day/skc?size=small',
   },
 ];
 
@@ -42,6 +46,8 @@ describe('HourlyTables', () => {
     expect(screen.getByText('10%')).toBeInTheDocument();
     expect(screen.getByText('70F')).toBeInTheDocument();
     expect(screen.getByText('58F')).toBeInTheDocument();
+    expect(screen.getByText('🌫️')).toBeInTheDocument();
+    expect(screen.getByText('Patchy Fog')).toBeInTheDocument();
   });
 
   it('renders nothing when periods are empty', () => {
