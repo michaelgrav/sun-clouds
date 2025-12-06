@@ -1,16 +1,23 @@
+import { lazy, Suspense, useMemo } from 'react';
 import { Card, Skeleton, Stack } from '@mantine/core';
 import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
 import { HourlyForecastSectionProps } from '../../../../types/appSkeleton';
-import ForecastLineChart from './ForecastLineChart';
 import { HourlyTables } from './HourlyTables';
 
+const ForecastLineChart = lazy(() => import('./ForecastLineChart'));
+
 export const HourlyForecastSection = ({ hourlyPeriods }: HourlyForecastSectionProps) => {
-  const activeHourlyPeriods = filterActivePeriods(hourlyPeriods ?? []);
+  const activeHourlyPeriods = useMemo(
+    () => filterActivePeriods(hourlyPeriods ?? []),
+    [hourlyPeriods]
+  );
   const hasActiveHourlyData = activeHourlyPeriods.length > 0;
 
   return (
     <>
-      <ForecastLineChart data={activeHourlyPeriods} />
+      <Suspense fallback={<ForecastLineChartSkeleton />}>
+        <ForecastLineChart data={activeHourlyPeriods} />
+      </Suspense>
 
       {hasActiveHourlyData ? (
         <HourlyTables periods={activeHourlyPeriods} />
@@ -35,5 +42,16 @@ export const HourlyTablesSkeleton = () => (
     ))}
   </Stack>
 );
+
+function ForecastLineChartSkeleton() {
+  return (
+    <Stack gap="md" data-testid="forecast-line-suspense" mb="xl">
+      <Card shadow="sm" padding="md" radius="md" withBorder>
+        <Skeleton height={18} width="40%" mb="sm" radius="sm" />
+        <Skeleton height={280} radius="md" />
+      </Card>
+    </Stack>
+  );
+}
 
 export default HourlyForecastSection;

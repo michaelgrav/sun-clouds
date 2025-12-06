@@ -17,7 +17,7 @@ describe('HourlyForecastSection', () => {
   it('shows skeletons when data is missing', () => {
     render(<HourlyForecastSection hourlyPeriods={undefined} />);
 
-    expect(screen.getByTestId('forecast-line-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('forecast-line-suspense')).toBeInTheDocument();
     expect(screen.getByTestId('hourly-table-skeletons')).toBeInTheDocument();
   });
 
