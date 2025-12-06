@@ -8,6 +8,8 @@ import {
   Stack,
   Text,
   Title,
+  useComputedColorScheme,
+  useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useWeatherData } from '../../hooks/useWeatherData';
@@ -23,6 +25,8 @@ import WeatherRadarModal from './_components/WeatherRadarModal';
 export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
   const isSmall = useMediaQuery('(max-width: 768px)');
+  const theme = useMantineTheme();
+  const colorScheme = useComputedColorScheme('light');
 
   const {
     weatherData,
@@ -42,6 +46,21 @@ export function AppSkeleton() {
     ? `${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
     : null;
 
+  const barBackground =
+    colorScheme === 'dark'
+      ? `linear-gradient(135deg, rgba(255, 212, 108, 0.12), rgba(255, 180, 41, 0.24))`
+      : `linear-gradient(135deg, ${theme.colors.sunshine[0]}, ${theme.colors.sunshine[2]})`;
+
+  const barBorder =
+    colorScheme === 'dark'
+      ? '1px solid rgba(255, 212, 108, 0.25)'
+      : `1px solid ${theme.colors.sunshine[3]}`;
+
+  const barShadow =
+    colorScheme === 'dark'
+      ? '0 6px 18px rgba(0, 0, 0, 0.45)'
+      : '0 6px 18px rgba(255, 180, 41, 0.25)';
+
   return (
     <AppShell
       padding="md"
@@ -52,7 +71,9 @@ export function AppSkeleton() {
         collapsed: { mobile: !opened, desktop: !opened },
       }}
     >
-      <AppShell.Header>
+      <AppShell.Header
+        style={{ background: barBackground, borderBottom: barBorder, boxShadow: barShadow }}
+      >
         <Group
           style={{
             width: '100%',
@@ -60,6 +81,7 @@ export function AppSkeleton() {
             justifyContent: 'space-between',
             alignItems: 'center',
             height: '100%',
+            padding: '0.25rem 0.75rem',
           }}
         >
           <Group style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -91,7 +113,7 @@ export function AppSkeleton() {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar>
+      <AppShell.Navbar p={0} style={{ background: 'var(--app-bg, #f7fbff)' }}>
         <DailyForecastCards periods={dailyPeriods} />
       </AppShell.Navbar>
 
