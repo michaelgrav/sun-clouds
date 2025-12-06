@@ -87,10 +87,10 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
       <Modal
         opened={opened}
         onClose={close}
-        withCloseButton
         centered
         size="sm"
         radius="md"
+        withCloseButton={false}
         title={
           <Text fw={700} size="lg" ta="center">
             Search by City & State
@@ -144,7 +144,11 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
         aria-label="Search location"
         onClick={() => {
           setFieldErrors({});
-          open();
+          if (opened) {
+            close();
+          } else {
+            open();
+          }
         }}
         style={{ position: 'fixed', bottom: 16, right: 76, zIndex: 2000 }}
       >
