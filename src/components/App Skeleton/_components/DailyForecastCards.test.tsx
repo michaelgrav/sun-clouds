@@ -8,10 +8,10 @@ const periods = [
 ];
 
 describe('DailyForecastCards', () => {
-  it('renders loader when no data', () => {
+  it('renders skeletons when no data', () => {
     render(<DailyForecastCards periods={undefined} />);
 
-    expect(screen.getByTestId('daily-loader')).toBeInTheDocument();
+    expect(screen.getByTestId('daily-skeleton')).toBeInTheDocument();
   });
 
   it('renders cards with names and summaries', () => {

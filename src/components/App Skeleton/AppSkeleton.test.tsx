@@ -21,17 +21,23 @@ describe('AppSkeleton', () => {
     vi.useRealTimers();
   });
 
-  it('shows loader while hourly data is absent', () => {
+  it('shows skeletons while hourly data is absent', () => {
     mockUseWeatherData.mockReturnValue({
       weatherData: null,
       weatherForecast: null,
       hourlyWeatherForecast: null,
+      activeAlerts: [],
+      latitude: null,
+      longitude: null,
+      setCoordinates: vi.fn(),
       isLoading: true,
     });
 
     render(<AppSkeleton />);
 
-    expect(screen.getByTestId('hourly-loader')).toBeInTheDocument();
+    expect(screen.getByTestId('hourly-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('summary-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('forecast-line-skeleton')).toBeInTheDocument();
   });
 
   it('renders summary, location, and grouped hourly tables', () => {
@@ -72,6 +78,10 @@ describe('AppSkeleton', () => {
           ],
         },
       },
+      activeAlerts: [],
+      latitude: 40,
+      longitude: -74,
+      setCoordinates: vi.fn(),
       isLoading: false,
     });
 

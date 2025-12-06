@@ -1,4 +1,14 @@
-import { AppShell, Burger, Center, Divider, Group, Loader, Text, Title } from '@mantine/core';
+import {
+  AppShell,
+  Burger,
+  Card,
+  Divider,
+  Group,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useWeatherData } from '../../hooks/useWeatherData';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
@@ -26,6 +36,11 @@ export function AppSkeleton() {
 
   const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
   const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
+  const summary = weatherForecast?.properties?.periods?.[0]?.detailedForecast;
+  const hasHourlyData = Boolean(hourlyPeriods?.length);
+  const locationLabel = weatherData
+    ? `${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
+    : null;
 
   return (
     <AppShell
@@ -81,31 +96,24 @@ export function AppSkeleton() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        {hourlyPeriods ? (
-          <>
-            <WeatherAlertsCard alerts={activeAlerts} />
-            <CurrentSummaryCard
-              summary={weatherForecast?.properties?.periods[0]?.detailedForecast}
-            />
+        <WeatherAlertsCard alerts={activeAlerts} />
 
-            <Divider my="md" variant="dotted" size="md" />
+        {summary ? <CurrentSummaryCard summary={summary} /> : <SummarySkeleton />}
 
-            <Title order={1} ta="center" mt={25} mb={15}>
-              Hourly Forecast{' '}
-              {weatherData
-                ? `for ${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
-                : 'for '}
-            </Title>
+        <Divider my="md" variant="dotted" size="md" />
 
-            <ForecastLineChart data={hourlyPeriods} />
+        <Stack gap="sm" align="center" mb="md">
+          <Title order={1} ta="center" mt={10} mb={4}>
+            Hourly Forecast {locationLabel ? `for ${locationLabel}` : ''}
+          </Title>
+          {!hasHourlyData && (
+            <Skeleton width="45%" height={12} radius="xl" data-testid="hourly-skeleton" />
+          )}
+        </Stack>
 
-            <HourlyTables periods={hourlyPeriods} />
-          </>
-        ) : (
-          <Center>
-            <Loader color="yellow" size="xl" mt={20} data-testid="hourly-loader" />
-          </Center>
-        )}
+        <ForecastLineChart data={hourlyPeriods} />
+
+        {hasHourlyData ? <HourlyTables periods={hourlyPeriods} /> : <HourlyTablesSkeleton />}
       </AppShell.Main>
 
       <LocationSearchButton onLocationSelect={(lat, lon) => setCoordinates(lat, lon)} />
@@ -113,3 +121,27 @@ export function AppSkeleton() {
     </AppShell>
   );
 }
+
+const SummarySkeleton = () => (
+  <Card shadow="sm" padding="lg" radius="md" withBorder mb="35" data-testid="summary-skeleton">
+    <Skeleton height={18} width="45%" mb="sm" radius="sm" />
+    <Skeleton height={12} width="92%" mb={8} radius="sm" />
+    <Skeleton height={12} width="88%" mb={8} radius="sm" />
+    <Skeleton height={12} width="80%" radius="sm" />
+  </Card>
+);
+
+const HourlyTablesSkeleton = () => (
+  <Stack gap="md" data-testid="hourly-table-skeletons" mt="md">
+    {[0, 1].map((key) => (
+      <Card key={key} shadow="sm" padding="md" radius="md" withBorder mb="6">
+        <Skeleton height={16} width="35%" mb="sm" radius="sm" />
+        <Stack gap={8}>
+          {[0, 1, 2, 3].map((row) => (
+            <Skeleton key={row} height={12} radius="sm" />
+          ))}
+        </Stack>
+      </Card>
+    ))}
+  </Stack>
+);

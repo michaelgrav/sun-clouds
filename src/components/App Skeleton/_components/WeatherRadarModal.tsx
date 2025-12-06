@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { ActionIcon, Center, Loader, Modal, Text } from '@mantine/core';
+import { useEffect, useMemo, useState } from 'react';
+import { ActionIcon, Center, Modal, Skeleton, Text } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 
 interface WeatherRadarModalProps {
@@ -15,11 +15,19 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
   const hasCoords = latitude != null && longitude != null;
 
   const radarSrc = useMemo(() => {
-    if (!hasCoords) {
+    if (!hasCoords || !mapOpened) {
       return undefined;
     }
     return `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=%C2%B0F&metricWind=mph&zoom=7&overlay=radar&product=radar&level=surface&lat=${latitude}&lon=${longitude}&message=true`;
-  }, [hasCoords, latitude, longitude]);
+  }, [hasCoords, latitude, longitude, mapOpened]);
+
+  useEffect(() => {
+    if (mapOpened) {
+      setMapLoaded(false);
+    }
+  }, [latitude, longitude, mapOpened]);
+
+  const shouldShowSkeleton = mapOpened && (!hasCoords || (hasCoords && !mapLoaded));
 
   return (
     <>
@@ -45,19 +53,32 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
           content: {
             minHeight: isSmall ? '75vh' : '85vh',
             height: isSmall ? '85vh' : '90vh',
+            display: 'flex',
+            flexDirection: 'column',
           },
           header: { padding: '1rem 1.25rem', justifyContent: 'center' },
           title: { width: '100%', textAlign: 'center' },
-          body: { padding: 0, display: 'flex', flexDirection: 'column', height: '100%' },
+          body: {
+            padding: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            flex: 1,
+          },
         }}
       >
-        {(!hasCoords || (mapOpened && hasCoords && !mapLoaded)) && (
-          <Center style={{ flex: 1 }}>
-            <Loader color="yellow" size="lg" aria-label="radar-loader" />
+        {shouldShowSkeleton && (
+          <Center style={{ flex: 1, width: '100%', minHeight: '100%' }}>
+            <Skeleton
+              width="100%"
+              height="100%"
+              radius="lg"
+              data-testid="radar-skeleton"
+            />
           </Center>
         )}
 
-        {mapOpened && hasCoords && (
+        {mapOpened && hasCoords && radarSrc && (
           <div style={{ flex: 1 }}>
             <iframe
               title="Weather Radar"
@@ -72,6 +93,12 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
               onLoad={() => setMapLoaded(true)}
             />
           </div>
+        )}
+
+        {mapOpened && !hasCoords && (
+          <Text ta="center" c="dimmed" size="sm" mb="md">
+            Search for a location to view radar data.
+          </Text>
         )}
       </Modal>
 

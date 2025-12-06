@@ -30,7 +30,7 @@ describe('WeatherRadarModal', () => {
     expect(screen.queryByTitle('Weather Radar')).toBeNull();
   });
 
-  it('shows loader when coordinates are missing', async () => {
+  it('shows skeleton when coordinates are missing', async () => {
     const user = userEvent.setup();
     render(<WeatherRadarModal latitude={null} longitude={null} />);
 
@@ -38,7 +38,7 @@ describe('WeatherRadarModal', () => {
     await user.click(toggleButton);
 
     expect(screen.getByText('Live Weather Radar')).toBeInTheDocument();
-    expect(screen.getByLabelText('radar-loader')).toBeInTheDocument();
+    expect(screen.getByTestId('radar-skeleton')).toBeInTheDocument();
     expect(screen.queryByTitle('Weather Radar')).toBeNull();
   });
 });

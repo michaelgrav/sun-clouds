@@ -1,5 +1,5 @@
 import { getFilteredChartTooltipPayload, LineChart } from '@mantine/charts';
-import { Paper, Text } from '@mantine/core';
+import { Paper, Skeleton, Stack, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { Period } from '../../../../types/weather';
 
@@ -38,7 +38,18 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   const hoursToShow = isMobile ? 4 : 12;
 
   if (!data?.length) {
-    return null;
+    return (
+      <Stack gap="md" data-testid="forecast-line-skeleton" mb="xl">
+        <Paper withBorder shadow="sm" radius="md" p="md">
+          <Skeleton height={18} width="40%" mb="sm" radius="sm" />
+          <Skeleton height={300} radius="md" />
+        </Paper>
+        <Paper withBorder shadow="sm" radius="md" p="md">
+          <Skeleton height={14} width="35%" mb="sm" radius="sm" />
+          <Skeleton height={200} radius="md" />
+        </Paper>
+      </Stack>
+    );
   }
 
   const chartData = data.slice(0, hoursToShow).map((period) => {
