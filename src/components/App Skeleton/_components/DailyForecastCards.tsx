@@ -98,7 +98,10 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
       h="100%"
       offsetScrollbars
       style={{ background: navbarSurface, height: '100%' }}
-      styles={{ viewport: { background: navbarSurface, padding: 0 }, scrollbar: { backgroundColor: 'transparent' } }}
+      styles={{
+        viewport: { background: navbarSurface, padding: 0 },
+        scrollbar: { backgroundColor: 'transparent' },
+      }}
     >
       <div style={shellStyle}>
         <Title order={5} ta="center" mt={10} mb={12}>
