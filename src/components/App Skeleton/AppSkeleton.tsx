@@ -6,12 +6,15 @@ import { CurrentSummaryCard } from './_components/CurrentSummaryCard';
 import { DailyForecastCards } from './_components/DailyForecastCards';
 import ForecastLineChart from './_components/ForecastLineChart';
 import { HourlyTables } from './_components/HourlyTables';
+import WeatherAlertsCard from './_components/WeatherAlertsCard';
+import WeatherRadarModal from './_components/WeatherRadarModal';
 
 export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
   const isSmall = useMediaQuery('(max-width: 768px)');
 
-  const { weatherData, weatherForecast, hourlyWeatherForecast } = useWeatherData();
+  const { weatherData, weatherForecast, hourlyWeatherForecast, activeAlerts, latitude, longitude } =
+    useWeatherData();
 
   const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
   const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
@@ -45,8 +48,7 @@ export function AppSkeleton() {
               style={{ alignSelf: 'center' }}
               aria-label="Toggle navigation"
             />
-            <Text size={isSmall ? 'md' : 'xl'}  component="div" mt='-2'>
-              {' '}
+            <Text size={isSmall ? 'md' : 'xl'} component="div" mt={-2}>
               ☀️ Sun Clouds ☁️
             </Text>
           </Group>
@@ -73,6 +75,7 @@ export function AppSkeleton() {
       <AppShell.Main>
         {hourlyPeriods ? (
           <>
+            <WeatherAlertsCard alerts={activeAlerts} />
             <CurrentSummaryCard
               summary={weatherForecast?.properties?.periods[0]?.detailedForecast}
             />
@@ -96,6 +99,8 @@ export function AppSkeleton() {
           </Center>
         )}
       </AppShell.Main>
+
+      <WeatherRadarModal latitude={latitude} longitude={longitude} />
     </AppShell>
   );
 }
