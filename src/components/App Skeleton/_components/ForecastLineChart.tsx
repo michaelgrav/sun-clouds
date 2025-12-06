@@ -46,6 +46,10 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
 
+  const now = new Date();
+  const currentHourStart = new Date(now);
+  currentHourStart.setMinutes(0, 0, 0);
+
   const cardStyle = {
     background:
       colorScheme === 'dark'
@@ -73,14 +77,20 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
     );
   }
 
-  const chartData = data.slice(0, hoursToShow).map((period) => {
-    const date = new Date(period.startTime);
-    return {
-      date: date.toLocaleTimeString([], { hour: 'numeric' }),
-      temperature: period.temperature,
-      precipitation: period.probabilityOfPrecipitation?.value ?? null,
-    };
-  });
+  const chartData = data
+    .filter((period) => {
+      const start = new Date(period.startTime);
+      return start >= currentHourStart;
+    })
+    .slice(0, hoursToShow)
+    .map((period) => {
+      const date = new Date(period.startTime);
+      return {
+        date: date.toLocaleTimeString([], { hour: 'numeric' }),
+        temperature: period.temperature,
+        precipitation: period.probabilityOfPrecipitation?.value ?? null,
+      };
+    });
 
   const temps = chartData
     .map((point) => point.temperature)
