@@ -56,7 +56,9 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
         (response.data as Array<{ lat: string; lon: string; display_name?: string }>) || [];
 
       if (!first) {
-        setFieldErrors({ general: 'No matching location found. Please enter a valid city and state.' });
+        setFieldErrors({
+          general: 'No matching location found. Please enter a valid city and state.',
+        });
         return;
       }
 
@@ -118,16 +120,15 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
                 {fieldErrors.general}
               </Text>
             ) : null}
-            <Group justify="flex-end" >
-              <Button 
-                type="submit" 
+            <Group justify="flex-end">
+              <Button
+                type="submit"
                 variant="gradient"
                 gradient={{ from: 'blue', to: 'yellow', deg: 35 }}
-                loading={isSearching} 
-                color="yellow" 
+                loading={isSearching}
+                color="yellow"
                 radius="xl"
               >
-                
                 Search 🔎
               </Button>
             </Group>
