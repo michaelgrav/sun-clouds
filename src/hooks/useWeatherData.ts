@@ -22,6 +22,7 @@ export const useWeatherData = (): WeatherState => {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const lastZoneRef = useRef<string | null>(null);
+  const lastCoordinatesRef = useRef<string | null>(null);
 
   useEffect(() => {
     const handleSuccess = (position: GeolocationPosition) => {
@@ -41,6 +42,13 @@ export const useWeatherData = (): WeatherState => {
     if (latitude == null || longitude == null) {
       return;
     }
+
+    const coordinateKey = `${latitude},${longitude}`;
+    if (coordinateKey === lastCoordinatesRef.current) {
+      return;
+    }
+    lastCoordinatesRef.current = coordinateKey;
+
     const controller = new AbortController();
 
     const fetchWeather = async () => {
@@ -101,6 +109,7 @@ export const useWeatherData = (): WeatherState => {
     setHourlyWeatherForecast(null);
     setActiveAlerts([]);
     lastZoneRef.current = null;
+    lastCoordinatesRef.current = null;
     setLatitude(lat);
     setLongitude(lon);
   };

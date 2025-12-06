@@ -17,28 +17,28 @@ describe('WeatherRadarModal', () => {
 
     const toggleButton = screen.getByRole('button', { name: /open radar map/i });
 
-    expect(screen.queryByText('Live Weather Radar')).toBeNull();
+    expect(screen.queryByText(/live weather radar/i)).toBeNull();
 
     await user.click(toggleButton);
 
-    expect(screen.getByText('Live Weather Radar')).toBeInTheDocument();
+    expect(screen.getByText(/live weather radar/i)).toBeInTheDocument();
     expect(screen.getByTitle('Weather Radar')).toBeInTheDocument();
 
     await user.click(toggleButton);
 
-    expect(screen.queryByText('Live Weather Radar')).toBeNull();
+    expect(screen.queryByText(/live weather radar/i)).toBeNull();
     expect(screen.queryByTitle('Weather Radar')).toBeNull();
   });
 
-  it('shows loader when coordinates are missing', async () => {
+  it('shows skeleton when coordinates are missing', async () => {
     const user = userEvent.setup();
     render(<WeatherRadarModal latitude={null} longitude={null} />);
 
     const toggleButton = screen.getByRole('button', { name: /open radar map/i });
     await user.click(toggleButton);
 
-    expect(screen.getByText('Live Weather Radar')).toBeInTheDocument();
-    expect(screen.getByLabelText('radar-loader')).toBeInTheDocument();
+    expect(screen.getByText(/live weather radar/i)).toBeInTheDocument();
+    expect(screen.getByTestId('radar-skeleton')).toBeInTheDocument();
     expect(screen.queryByTitle('Weather Radar')).toBeNull();
   });
 });
