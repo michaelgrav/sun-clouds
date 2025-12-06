@@ -35,7 +35,7 @@ describe('AppSkeleton', () => {
 
     render(<AppSkeleton />);
 
-    expect(screen.getByTestId('hourly-skeleton')).toBeInTheDocument();
+    expect(screen.getByTestId('location-skeleton')).toBeInTheDocument();
     expect(screen.getByTestId('summary-skeleton')).toBeInTheDocument();
     expect(screen.getByTestId('forecast-line-skeleton')).toBeInTheDocument();
   });

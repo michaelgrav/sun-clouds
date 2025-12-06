@@ -104,11 +104,20 @@ export function AppSkeleton() {
 
         <Stack gap="sm" align="center" mb="md">
           <Title order={1} ta="center" mt={10} mb={4}>
-            Hourly Forecast {locationLabel ? `for ${locationLabel}` : ''}
+            Hourly Forecast for{' '}
+            {locationLabel ? (
+              locationLabel
+            ) : (
+              <Skeleton
+                width={160}
+                height={18}
+                radius="xl"
+                display="inline-block"
+                data-testid="location-skeleton"
+                style={{ verticalAlign: 'middle' }}
+              />
+            )}
           </Title>
-          {!hasHourlyData && (
-            <Skeleton width="45%" height={12} radius="xl" data-testid="hourly-skeleton" />
-          )}
         </Stack>
 
         <ForecastLineChart data={hourlyPeriods} />
