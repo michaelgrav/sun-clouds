@@ -6,6 +6,7 @@ import { CurrentSummaryCard } from './_components/CurrentSummaryCard';
 import { DailyForecastCards } from './_components/DailyForecastCards';
 import ForecastLineChart from './_components/ForecastLineChart';
 import { HourlyTables } from './_components/HourlyTables';
+import LocationSearchButton from './_components/LocationSearchButton';
 import WeatherAlertsCard from './_components/WeatherAlertsCard';
 import WeatherRadarModal from './_components/WeatherRadarModal';
 
@@ -13,8 +14,15 @@ export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
   const isSmall = useMediaQuery('(max-width: 768px)');
 
-  const { weatherData, weatherForecast, hourlyWeatherForecast, activeAlerts, latitude, longitude } =
-    useWeatherData();
+  const {
+    weatherData,
+    weatherForecast,
+    hourlyWeatherForecast,
+    activeAlerts,
+    latitude,
+    longitude,
+    setCoordinates,
+  } = useWeatherData();
 
   const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
   const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
@@ -100,6 +108,7 @@ export function AppSkeleton() {
         )}
       </AppShell.Main>
 
+      <LocationSearchButton onLocationSelect={(lat, lon) => setCoordinates(lat, lon)} />
       <WeatherRadarModal latitude={latitude} longitude={longitude} />
     </AppShell>
   );
