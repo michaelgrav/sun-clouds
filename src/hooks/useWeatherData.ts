@@ -10,6 +10,7 @@ interface WeatherState {
   latitude: number | null;
   longitude: number | null;
   isLoading: boolean;
+  setCoordinates: (lat: number, lon: number) => void;
 }
 
 export const useWeatherData = (): WeatherState => {
@@ -20,9 +21,7 @@ export const useWeatherData = (): WeatherState => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const didFetchRef = useRef({ done: false });
-  const alertsFetchedRef = useRef(false);
+  const lastZoneRef = useRef<string | null>(null);
 
   useEffect(() => {
     const handleSuccess = (position: GeolocationPosition) => {
@@ -42,15 +41,14 @@ export const useWeatherData = (): WeatherState => {
     if (latitude == null || longitude == null) {
       return;
     }
-    if (didFetchRef.current.done) {
-      return;
-    }
+    const controller = new AbortController();
 
     const fetchWeather = async () => {
       try {
         setIsLoading(true);
         const pointsRes = await axios.get<PointsResponse>(
-          `https://api.weather.gov/points/${latitude},${longitude}`
+          `https://api.weather.gov/points/${latitude},${longitude}`,
+          { signal: controller.signal }
         );
         setWeatherData(pointsRes.data);
 
@@ -60,24 +58,27 @@ export const useWeatherData = (): WeatherState => {
         const zoneId = forecastZoneUrl?.split('/').pop();
 
         if (forecastUrl) {
-          const forecastRes = await axios.get<ForecastResponse>(forecastUrl);
+          const forecastRes = await axios.get<ForecastResponse>(forecastUrl, {
+            signal: controller.signal,
+          });
           setWeatherForecast(forecastRes.data);
         }
 
         if (hourlyForecastUrl) {
-          const hourlyForecastRes = await axios.get<ForecastResponse>(hourlyForecastUrl);
+          const hourlyForecastRes = await axios.get<ForecastResponse>(hourlyForecastUrl, {
+            signal: controller.signal,
+          });
           setHourlyWeatherForecast(hourlyForecastRes.data);
         }
 
-        if (zoneId && !alertsFetchedRef.current) {
+        if (zoneId && zoneId !== lastZoneRef.current) {
           const alertsRes = await axios.get<AlertsResponse>(
-            `https://api.weather.gov/alerts/active/zone/${zoneId}`
+            `https://api.weather.gov/alerts/active/zone/${zoneId}`,
+            { signal: controller.signal }
           );
           setActiveAlerts(alertsRes.data.features ?? []);
-          alertsFetchedRef.current = true;
+          lastZoneRef.current = zoneId;
         }
-
-        didFetchRef.current.done = true;
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error);
@@ -87,7 +88,22 @@ export const useWeatherData = (): WeatherState => {
     };
 
     fetchWeather();
+
+    return () => {
+      controller.abort();
+    };
   }, [latitude, longitude]);
+
+  const setCoordinates = (lat: number, lon: number) => {
+    setIsLoading(true);
+    setWeatherData(null);
+    setWeatherForecast(null);
+    setHourlyWeatherForecast(null);
+    setActiveAlerts([]);
+    lastZoneRef.current = null;
+    setLatitude(lat);
+    setLongitude(lon);
+  };
 
   return {
     weatherData,
@@ -97,5 +113,6 @@ export const useWeatherData = (): WeatherState => {
     latitude,
     longitude,
     isLoading,
+    setCoordinates,
   };
 };
