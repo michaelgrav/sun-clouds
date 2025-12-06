@@ -1,25 +1,11 @@
-import {
-  AppShell,
-  Burger,
-  Card,
-  Divider,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  Title,
-  useComputedColorScheme,
-  useMantineTheme,
-} from '@mantine/core';
+import { AppShell, Divider } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useWeatherData } from '../../hooks/useWeatherData';
-import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
-import { CurrentSummaryCard } from './_components/CurrentSummaryCard';
+import { AppHeader } from './_components/AppHeader';
 import { DailyForecastCards } from './_components/DailyForecastCards';
-import ForecastLineChart from './_components/ForecastLineChart';
-import { HourlyTables } from './_components/HourlyTables';
+import { HourlyForecastSection } from './_components/HourlyForecastSection';
 import LocationSearchButton from './_components/LocationSearchButton';
-import WeatherAlertsCard from './_components/WeatherAlertsCard';
+import { SummarySection } from './_components/SummarySection';
 import WeatherRadarModal from './_components/WeatherRadarModal';
 
 export function AppSkeleton() {
@@ -27,8 +13,6 @@ export function AppSkeleton() {
   const [isSearchOpen, { open: openSearch, close: closeSearch }] = useDisclosure(false);
   const [isRadarOpen, { open: openRadar, close: closeRadar }] = useDisclosure(false);
   const isSmall = useMediaQuery('(max-width: 768px)');
-  const theme = useMantineTheme();
-  const colorScheme = useComputedColorScheme('light');
 
   const {
     weatherData,
@@ -48,21 +32,6 @@ export function AppSkeleton() {
     ? `${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
     : null;
 
-  const barBackground =
-    colorScheme === 'dark'
-      ? `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%), linear-gradient(135deg, ${theme.colors.sky[8]}, ${theme.colors.sunshine[6]})`
-      : `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%), linear-gradient(135deg, ${theme.colors.sky[1]}, ${theme.colors.sunshine[2]})`;
-
-  const barBorder =
-    colorScheme === 'dark'
-      ? `1px solid ${theme.colors.sky[7]}`
-      : `1px solid ${theme.colors.sky[2]}`;
-
-  const barShadow =
-    colorScheme === 'dark'
-      ? '0 6px 18px rgba(0, 0, 0, 0.45)'
-      : '0 6px 18px rgba(255, 180, 41, 0.25)';
-
   return (
     <AppShell
       padding="md"
@@ -73,80 +42,22 @@ export function AppSkeleton() {
         collapsed: { mobile: !opened, desktop: !opened },
       }}
     >
-      <AppShell.Header
-        style={{ background: barBackground, borderBottom: barBorder, boxShadow: barShadow }}
-      >
-        <Group
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            height: '100%',
-            padding: '0.25rem 0.75rem',
-          }}
-        >
-          <Group style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              size="sm"
-              ml="xs"
-              style={{ alignSelf: 'center' }}
-              aria-label="Toggle navigation"
-            />
-            <Text size={isSmall ? 'md' : 'xl'} component="div" mt={-2}>
-              ☀️ Sun Clouds ☁️
-            </Text>
-          </Group>
-
-          <Text
-            size={isSmall ? 'sm' : 'xl'}
-            ta="right"
-            mr={10}
-            mt={-10}
-            style={{
-              textAlign: 'right',
-            }}
-            component="div"
-          >
-            <ColorSchemeToggle />
-          </Text>
-        </Group>
-      </AppShell.Header>
+      <AppHeader opened={opened} onToggle={toggle} isSmallScreen={isSmall ?? false} />
 
       <AppShell.Navbar p={0} style={{ background: 'var(--app-bg, #f7fbff)' }}>
         <DailyForecastCards periods={dailyPeriods} />
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <WeatherAlertsCard alerts={activeAlerts} />
-
-        {summary ? <CurrentSummaryCard summary={summary} /> : <SummarySkeleton />}
+        <SummarySection summary={summary} alerts={activeAlerts} />
 
         <Divider my="md" variant="dotted" size="md" />
 
-        <Stack gap="sm" align="center" mb="md">
-          <Title order={1} ta="center" mt={10} mb={4}>
-            Hourly Forecast for{' '}
-            {locationLabel ? (
-              locationLabel
-            ) : (
-              <Skeleton
-                width={160}
-                height={18}
-                radius="xl"
-                display="inline-block"
-                data-testid="location-skeleton"
-                style={{ verticalAlign: 'middle' }}
-              />
-            )}
-          </Title>
-        </Stack>
-
-        <ForecastLineChart data={hourlyPeriods} />
-
-        {hasHourlyData ? <HourlyTables periods={hourlyPeriods} /> : <HourlyTablesSkeleton />}
+        <HourlyForecastSection
+          hourlyPeriods={hourlyPeriods}
+          locationLabel={locationLabel}
+          hasHourlyData={hasHourlyData}
+        />
       </AppShell.Main>
 
       <LocationSearchButton
@@ -171,27 +82,3 @@ export function AppSkeleton() {
     </AppShell>
   );
 }
-
-const SummarySkeleton = () => (
-  <Card shadow="sm" padding="lg" radius="md" withBorder mb="35" data-testid="summary-skeleton">
-    <Skeleton height={18} width="45%" mb="sm" radius="sm" />
-    <Skeleton height={12} width="92%" mb={8} radius="sm" />
-    <Skeleton height={12} width="88%" mb={8} radius="sm" />
-    <Skeleton height={12} width="80%" radius="sm" />
-  </Card>
-);
-
-const HourlyTablesSkeleton = () => (
-  <Stack gap="md" data-testid="hourly-table-skeletons" mt="md">
-    {[0, 1].map((key) => (
-      <Card key={key} shadow="sm" padding="md" radius="md" withBorder mb="6">
-        <Skeleton height={16} width="35%" mb="sm" radius="sm" />
-        <Stack gap={8}>
-          {[0, 1, 2, 3].map((row) => (
-            <Skeleton key={row} height={12} radius="sm" />
-          ))}
-        </Stack>
-      </Card>
-    ))}
-  </Stack>
-);

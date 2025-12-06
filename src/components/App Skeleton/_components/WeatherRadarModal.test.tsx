@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { render, screen, userEvent } from '@test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import WeatherRadarModal from './WeatherRadarModal';
@@ -10,10 +11,30 @@ vi.mock('@mantine/hooks', async () => {
   };
 });
 
+const Wrapper = ({
+  latitude,
+  longitude,
+}: {
+  latitude: number | null;
+  longitude: number | null;
+}) => {
+  const [opened, setOpened] = useState(false);
+
+  return (
+    <WeatherRadarModal
+      latitude={latitude}
+      longitude={longitude}
+      opened={opened}
+      onOpen={() => setOpened(true)}
+      onClose={() => setOpened(false)}
+    />
+  );
+};
+
 describe('WeatherRadarModal', () => {
   it('toggles modal open and close using the action button', async () => {
     const user = userEvent.setup();
-    render(<WeatherRadarModal latitude={40} longitude={-74} />);
+    render(<Wrapper latitude={40} longitude={-74} />);
 
     const toggleButton = screen.getByRole('button', { name: /open radar map/i });
 
@@ -32,7 +53,7 @@ describe('WeatherRadarModal', () => {
 
   it('shows skeleton when coordinates are missing', async () => {
     const user = userEvent.setup();
-    render(<WeatherRadarModal latitude={null} longitude={null} />);
+    render(<Wrapper latitude={null} longitude={null} />);
 
     const toggleButton = screen.getByRole('button', { name: /open radar map/i });
     await user.click(toggleButton);
