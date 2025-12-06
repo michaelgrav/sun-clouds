@@ -22,11 +22,14 @@ export interface PrecipitationProbability {
 
 export interface Period {
   startTime: string;
+  endTime?: string;
   name?: string;
   detailedForecast?: string;
   probabilityOfPrecipitation?: PrecipitationProbability;
   temperature?: number | null;
   temperatureUnit?: string;
+  shortForecast?: string | null;
+  icon?: string | null;
   windSpeed: string | null;
 }
 

@@ -8,15 +8,23 @@ import {
   useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface WeatherRadarModalProps {
   latitude: number | null;
   longitude: number | null;
+  opened: boolean;
+  onOpen: () => void;
+  onClose: () => void;
 }
 
-export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProps) => {
-  const [mapOpened, { open: openMap, close: closeMap }] = useDisclosure(false);
+export const WeatherRadarModal = ({
+  latitude,
+  longitude,
+  opened,
+  onOpen,
+  onClose,
+}: WeatherRadarModalProps) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const isSmall = useMediaQuery('(max-width: 768px)');
   const theme = useMantineTheme();
@@ -30,6 +38,14 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
       : `linear-gradient(135deg, ${theme.colors.sky[1]}, ${theme.colors.sunshine[2]})`;
 
   const accentWash = `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%)`;
+
+  const ctaStyle = {
+    backgroundImage: `${accentWash}, ${modalGradient}`,
+    border: `1px solid ${colorScheme === 'dark' ? theme.colors.sky[6] : theme.colors.sky[2]}`,
+    boxShadow:
+      colorScheme === 'dark' ? '0 10px 24px rgba(0,0,0,0.35)' : '0 10px 24px rgba(43,142,247,0.18)',
+    color: colorScheme === 'dark' ? theme.colors.sunshine[1] : theme.black,
+  } as const;
 
   const frameShell = {
     flex: 1,
@@ -45,28 +61,30 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
   };
 
   const radarSrc = useMemo(() => {
-    if (!hasCoords || !mapOpened) {
+    if (!hasCoords || !opened) {
       return undefined;
     }
     return `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=%C2%B0F&metricWind=mph&zoom=7&overlay=radar&product=radar&level=surface&lat=${latitude}&lon=${longitude}&message=true`;
-  }, [hasCoords, latitude, longitude, mapOpened]);
+  }, [hasCoords, latitude, longitude, opened]);
 
   useEffect(() => {
-    if (mapOpened) {
+    if (opened) {
       setMapLoaded(false);
     }
-  }, [latitude, longitude, mapOpened]);
+  }, [latitude, longitude, opened]);
 
-  const shouldShowSkeleton = mapOpened && (!hasCoords || (hasCoords && !mapLoaded));
+  const shouldShowSkeleton = opened && (!hasCoords || (hasCoords && !mapLoaded));
+
+  const handleClose = () => {
+    setMapLoaded(false);
+    onClose();
+  };
 
   return (
     <>
       <Modal
-        opened={mapOpened}
-        onClose={() => {
-          setMapLoaded(false);
-          closeMap();
-        }}
+        opened={opened}
+        onClose={handleClose}
         fullScreen={false}
         size={isSmall ? '95%' : '100%'}
         radius="md"
@@ -210,7 +228,7 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
             </Center>
           )}
 
-          {mapOpened && hasCoords && radarSrc && (
+          {opened && hasCoords && radarSrc && (
             <div style={{ flex: 1, minHeight: 0 }}>
               <iframe
                 title="Weather Radar"
@@ -227,7 +245,7 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
             </div>
           )}
 
-          {mapOpened && !hasCoords && (
+          {opened && !hasCoords && (
             <Text ta="center" c="dimmed" size="sm" mb="md">
               Search for a location to view radar data.
             </Text>
@@ -237,19 +255,18 @@ export const WeatherRadarModal = ({ latitude, longitude }: WeatherRadarModalProp
 
       <ActionIcon
         variant="filled"
-        color="yellow"
         size="xl"
         radius="xl"
         aria-label="Open radar map"
         onClick={() => {
           setMapLoaded(false);
-          if (mapOpened) {
-            closeMap();
+          if (opened) {
+            handleClose();
           } else {
-            openMap();
+            onOpen();
           }
         }}
-        style={{ position: 'fixed', bottom: 16, right: 16, zIndex: 2000 }}
+        style={{ position: 'fixed', bottom: 16, right: 16, zIndex: 2000, ...ctaStyle }}
       >
         🛰️
       </ActionIcon>

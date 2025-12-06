@@ -21,25 +21,16 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
 
   const navbarSurface = 'var(--app-bg, #f7fbff)';
 
-  const containerBackground =
-    colorScheme === 'dark'
-      ? `linear-gradient(135deg, rgba(255, 212, 108, 0.1), rgba(255, 180, 41, 0.18))`
-      : `linear-gradient(135deg, ${theme.colors.sunshine[0]}, ${theme.colors.sunshine[2]})`;
-
-  const containerBorder =
-    colorScheme === 'dark'
-      ? '1px solid rgba(255, 212, 108, 0.22)'
-      : `1px solid ${theme.colors.sunshine[3]}`;
-
-  const containerShadow =
-    colorScheme === 'dark'
-      ? '0 10px 28px rgba(0, 0, 0, 0.35)'
-      : '0 10px 26px rgba(255, 180, 41, 0.25)';
-
   const shellStyle = {
-    background: containerBackground,
-    border: containerBorder,
-    boxShadow: containerShadow,
+    background:
+      colorScheme === 'dark'
+        ? 'linear-gradient(135deg, #162235 0%, #0e1724 100%)'
+        : 'linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%)',
+    border: `1px solid ${colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.35)' : '#a9d4ff'}`,
+    boxShadow:
+      colorScheme === 'dark'
+        ? '0 10px 28px rgba(0, 0, 0, 0.35)'
+        : '0 10px 26px rgba(10, 68, 122, 0.12)',
     borderRadius: 0,
     padding: '10px 12px 16px',
     minHeight: '100%',
@@ -51,7 +42,14 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
     flexDirection: 'column' as const,
     gap: 8,
     overflow: 'visible',
-  };
+    background:
+      colorScheme === 'dark'
+        ? 'linear-gradient(135deg, #101826 0%, #0c1420 100%)'
+        : 'linear-gradient(135deg, #fef3d6 0%, #e3f0ff 100%)',
+    border: `1px solid ${colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.25)' : '#a9d4ff'}`,
+    boxShadow:
+      colorScheme === 'dark' ? '0 8px 20px rgba(0,0,0,0.32)' : '0 8px 18px rgba(10, 68, 122, 0.08)',
+  } as const;
 
   if (!periods) {
     return (
@@ -118,18 +116,29 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
               key={period.name}
               style={{ ...cardStyle, height: 'auto' }}
             >
-              <Text size="md" ta="center">
+              <Text
+                size="md"
+                ta="center"
+                fw={700}
+                c={colorScheme === 'dark' ? theme.colors.sky[0] : '#0b2a3a'}
+              >
                 {period.name}
               </Text>
 
               <Divider my="xs" />
 
-              <Text size="xs">🌡️ Average Temp: {period.temperature || 'NO AVERAGE TEMP??'}</Text>
-              <Text size="xs" mb="xs">
+              <Text size="xs" c={colorScheme === 'dark' ? theme.colors.sky[1] : theme.black}>
+                🌡️ Average Temp: {period.temperature || 'NO AVERAGE TEMP??'}
+              </Text>
+              <Text
+                size="xs"
+                mb="xs"
+                c={colorScheme === 'dark' ? theme.colors.sky[1] : theme.black}
+              >
                 🍃 Wind Speed: {period.windSpeed || 'NO WIND SPEED??'}
               </Text>
 
-              <Text size="xs">
+              <Text size="xs" c={colorScheme === 'dark' ? theme.colors.sky[1] : theme.black}>
                 {period.detailedForecast ||
                   "No summary available :( I guess you're gonna have to look outside..."}
               </Text>

@@ -1,0 +1,155 @@
+.card {
+  background: linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%);
+  border: 1px solid #a9d4ff;
+  box-shadow: 0 8px 20px rgba(10, 68, 122, 0.08);
+}
+
+.title {
+  color: #0b2a3a;
+  font-weight: 700;
+}
+
+.table {
+  --border-color: rgba(10, 68, 122, 0.16);
+  width: 100%;
+}
+
+.table :global(thead) {
+  background-color: rgba(43, 142, 247, 0.1);
+}
+
+.table :global(thead th) {
+  color: #0b2a3a;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table :global(tbody td) {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table :global(tbody tr:nth-of-type(odd)) {
+  background-color: rgba(255, 228, 163, 0.22);
+}
+
+.table :global(tbody tr:nth-of-type(even)) {
+  background-color: rgba(232, 245, 255, 0.6);
+}
+
+.table :global(tbody tr:hover) {
+  background-color: rgba(43, 142, 247, 0.14);
+}
+
+.timeCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0b2a3a;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.timeEmoji {
+  font-size: 1.05rem;
+}
+
+.timeLabel {
+  display: inline-block;
+  min-width: 54px;
+}
+
+.conditionCellWrapper {
+  min-width: 0;
+}
+
+.conditionCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.conditionLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #0b2a3a;
+}
+
+.numericCell {
+  text-align: right;
+  white-space: nowrap;
+  color: #0a447a;
+  font-weight: 600;
+}
+
+.numericHeader {
+  text-align: right;
+}
+
+.conditionHeader {
+  width: 35%;
+}
+
+:global([data-mantine-color-scheme='dark']) .card {
+  background: linear-gradient(135deg, #162235 0%, #0e1724 100%);
+  border: 1px solid rgba(140, 199, 255, 0.35);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+:global([data-mantine-color-scheme='dark']) .title {
+  color: #e8f1ff;
+}
+
+:global([data-mantine-color-scheme='dark']) .table {
+  --border-color: rgba(140, 199, 255, 0.22);
+}
+
+:global([data-mantine-color-scheme='dark']) .table :global(thead) {
+  background-color: rgba(92, 170, 247, 0.12);
+}
+
+:global([data-mantine-color-scheme='dark']) .table :global(thead th) {
+  color: #e8f1ff;
+}
+
+:global([data-mantine-color-scheme='dark']) .table :global(tbody tr:nth-of-type(odd)) {
+  background-color: rgba(22, 34, 53, 0.8);
+}
+
+:global([data-mantine-color-scheme='dark']) .table :global(tbody tr:nth-of-type(even)) {
+  background-color: rgba(14, 23, 36, 0.9);
+}
+
+:global([data-mantine-color-scheme='dark']) .table :global(tbody tr:hover) {
+  background-color: rgba(92, 170, 247, 0.18);
+}
+
+:global([data-mantine-color-scheme='dark']) .timeCell,
+:global([data-mantine-color-scheme='dark']) .conditionLabel {
+  color: #e8f1ff;
+}
+
+:global([data-mantine-color-scheme='dark']) .numericCell {
+  color: #8cc7ff;
+}
+
+@media (max-width: 640px) {
+  .table {
+    table-layout: fixed;
+  }
+
+  .conditionHeader,
+  .conditionCellWrapper {
+    display: none;
+  }
+
+  .timeCell {
+    gap: 10px;
+  }
+
+  .table :global(thead th),
+  .table :global(tbody td) {
+    padding: 10px;
+  }
+}
