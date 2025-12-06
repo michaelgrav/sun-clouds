@@ -66,18 +66,9 @@ export const AppHeader = ({ opened, onToggle, isSmallScreen }: AppHeaderProps) =
           </Text>
         </Group>
 
-        <Text
-          size={isSmallScreen ? 'sm' : 'xl'}
-          ta="right"
-          mr={10}
-          mt={-10}
-          style={{
-            textAlign: 'right',
-          }}
-          component="div"
-        >
+        <Group align="center" gap="xs" mr={6}>
           <ColorSchemeToggle />
-        </Text>
+        </Group>
       </Group>
     </AppShell.Header>
   );

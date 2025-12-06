@@ -39,6 +39,14 @@ export const WeatherRadarModal = ({
 
   const accentWash = `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%)`;
 
+  const ctaStyle = {
+    backgroundImage: `${accentWash}, ${modalGradient}`,
+    border: `1px solid ${colorScheme === 'dark' ? theme.colors.sky[6] : theme.colors.sky[2]}`,
+    boxShadow:
+      colorScheme === 'dark' ? '0 10px 24px rgba(0,0,0,0.35)' : '0 10px 24px rgba(43,142,247,0.18)',
+    color: colorScheme === 'dark' ? theme.colors.sunshine[1] : theme.black,
+  } as const;
+
   const frameShell = {
     flex: 1,
     borderRadius: 16,
@@ -247,7 +255,6 @@ export const WeatherRadarModal = ({
 
       <ActionIcon
         variant="filled"
-        color="yellow"
         size="xl"
         radius="xl"
         aria-label="Open radar map"
@@ -259,7 +266,7 @@ export const WeatherRadarModal = ({
             onOpen();
           }
         }}
-        style={{ position: 'fixed', bottom: 16, right: 16, zIndex: 2000 }}
+        style={{ position: 'fixed', bottom: 16, right: 16, zIndex: 2000, ...ctaStyle }}
       >
         🛰️
       </ActionIcon>

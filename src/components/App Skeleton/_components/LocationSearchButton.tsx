@@ -117,6 +117,14 @@ export const LocationSearchButton = ({
 
   const accentWash = `radial-gradient(circle at 18% 18%, ${theme.colors.sunshine[3]}33, transparent 42%), radial-gradient(circle at 78% 12%, ${theme.colors.sky[4]}33, transparent 40%)`;
 
+  const ctaStyle = {
+    backgroundImage: `${accentWash}, ${modalGradient}`,
+    border: `1px solid ${colorScheme === 'dark' ? theme.colors.sky[6] : theme.colors.sky[2]}`,
+    boxShadow:
+      colorScheme === 'dark' ? '0 10px 24px rgba(0,0,0,0.35)' : '0 10px 24px rgba(43,142,247,0.18)',
+    color: colorScheme === 'dark' ? theme.colors.sunshine[2] : theme.black,
+  } as const;
+
   return (
     <>
       <Modal
@@ -178,14 +186,7 @@ export const LocationSearchButton = ({
               </Text>
             ) : null}
             <Group justify="flex-end">
-              <Button
-                type="submit"
-                variant="gradient"
-                gradient={{ from: 'blue', to: 'yellow', deg: 35 }}
-                loading={isSearching}
-                color="yellow"
-                radius="xl"
-              >
+              <Button type="submit" loading={isSearching} radius="xl" styles={{ root: ctaStyle }}>
                 Search 🔎
               </Button>
             </Group>
@@ -195,7 +196,6 @@ export const LocationSearchButton = ({
 
       <ActionIcon
         variant="filled"
-        color="yellow"
         size="xl"
         radius="xl"
         aria-label="Search location"
@@ -207,7 +207,13 @@ export const LocationSearchButton = ({
             onOpen();
           }
         }}
-        style={{ position: 'fixed', bottom: 16, right: 76, zIndex: 2000 }}
+        style={{
+          position: 'fixed',
+          bottom: 16,
+          right: 76,
+          zIndex: 2000,
+          ...ctaStyle,
+        }}
       >
         🔎
       </ActionIcon>

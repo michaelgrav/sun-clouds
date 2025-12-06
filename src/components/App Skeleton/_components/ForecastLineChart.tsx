@@ -1,5 +1,12 @@
 import { getFilteredChartTooltipPayload, LineChart } from '@mantine/charts';
-import { Paper, Skeleton, Stack, Text } from '@mantine/core';
+import {
+  Paper,
+  Skeleton,
+  Stack,
+  Text,
+  useComputedColorScheme,
+  useMantineTheme,
+} from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { Period } from '../../../../types/weather';
 
@@ -36,15 +43,29 @@ const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
 export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const hoursToShow = isMobile ? 4 : 12;
+  const theme = useMantineTheme();
+  const colorScheme = useComputedColorScheme('light');
+
+  const cardStyle = {
+    background:
+      colorScheme === 'dark'
+        ? 'linear-gradient(135deg, #162235 0%, #0e1724 100%)'
+        : 'linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%)',
+    border: `1px solid ${colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.35)' : '#a9d4ff'}`,
+    boxShadow:
+      colorScheme === 'dark'
+        ? '0 10px 24px rgba(0,0,0,0.35)'
+        : '0 8px 20px rgba(10, 68, 122, 0.08)',
+  } as const;
 
   if (!data?.length) {
     return (
       <Stack gap="md" data-testid="forecast-line-skeleton" mb="xl">
-        <Paper withBorder shadow="sm" radius="md" p="md">
+        <Paper withBorder shadow="sm" radius="md" p="md" style={cardStyle}>
           <Skeleton height={18} width="40%" mb="sm" radius="sm" />
           <Skeleton height={300} radius="md" />
         </Paper>
-        <Paper withBorder shadow="sm" radius="md" p="md">
+        <Paper withBorder shadow="sm" radius="md" p="md" style={cardStyle}>
           <Skeleton height={14} width="35%" mb="sm" radius="sm" />
           <Skeleton height={200} radius="md" />
         </Paper>
@@ -81,8 +102,13 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
 
   return (
     <>
-      <Paper withBorder shadow="sm" radius="md" p="md" mb="xl">
-        <Text fw={700} size="md" mb="sm">
+      <Paper withBorder shadow="sm" radius="md" p="md" mb="xl" style={cardStyle}>
+        <Text
+          fw={700}
+          size="md"
+          mb="sm"
+          c={colorScheme === 'dark' ? theme.colors.sky[0] : '#0b2a3a'}
+        >
           Temperature
         </Text>
         <LineChart
@@ -93,7 +119,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             {
               name: 'temperature',
               label: 'Temperature',
-              color: 'yellow.5',
+              color: colorScheme === 'dark' ? '#ffb429' : '#ffb429',
             },
           ]}
           lineChartProps={{
@@ -112,8 +138,14 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
       </Paper>
 
       {hasPrecip && (
-        <Paper withBorder shadow="sm" radius="md" p="md" mb="xl">
-          <Text size="sm" fw={600} ta="center" mb="xs">
+        <Paper withBorder shadow="sm" radius="md" p="md" mb="xl" style={cardStyle}>
+          <Text
+            size="sm"
+            fw={600}
+            ta="center"
+            mb="xs"
+            c={colorScheme === 'dark' ? theme.colors.sky[0] : '#0b2a3a'}
+          >
             There&apos;s a chance of rain in the next {hoursToShow} hours!
           </Text>
           <LineChart
@@ -124,7 +156,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
               {
                 name: 'precipitation',
                 label: 'Precipitation',
-                color: 'blue.5',
+                color: colorScheme === 'dark' ? theme.colors.sky[3] : theme.colors.sky[5],
                 strokeDasharray: '6 3',
               },
             ]}
