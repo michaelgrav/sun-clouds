@@ -11,14 +11,20 @@ import {
   useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 
 interface LocationSearchButtonProps {
+  opened: boolean;
+  onOpen: () => void;
+  onClose: () => void;
   onLocationSelect: (latitude: number, longitude: number, label?: string) => void;
 }
 
-export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonProps) => {
-  const [opened, { open, close }] = useDisclosure(false);
+export const LocationSearchButton = ({
+  opened,
+  onOpen,
+  onClose,
+  onLocationSelect,
+}: LocationSearchButtonProps) => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{
@@ -31,14 +37,23 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
   const validate = () => {
     const errors: { city?: string; state?: string } = {};
 
-    if (!city.trim()) {
+    const cityValue = city.trim();
+    const stateValue = state.trim();
+
+    if (!cityValue) {
       errors.city = 'City is required';
+    } else if (cityValue.length < 2) {
+      errors.city = 'City must be at least 2 characters';
+    } else if (cityValue.length > 80) {
+      errors.city = 'City must be 80 characters or fewer';
+    } else if (!/^[a-zA-Z][a-zA-Z '’-]{1,79}$/.test(cityValue)) {
+      errors.city = 'Use letters, spaces, hyphens, or apostrophes only';
     }
 
-    if (!state.trim()) {
+    if (!stateValue) {
       errors.state = 'State is required';
-    } else if (state.trim().length < 2) {
-      errors.state = 'Use a two-letter code or full state name';
+    } else if (!/^[a-zA-Z]{2}$/.test(stateValue)) {
+      errors.state = 'Use a two-letter state code (letters only)';
     }
 
     setFieldErrors((prev) => ({ ...prev, ...errors, general: undefined }));
@@ -84,7 +99,7 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
       setCity('');
       setState('');
       setFieldErrors({});
-      close();
+      onClose();
     } catch (error) {
       setFieldErrors({ general: 'Unable to look up that location. Please try again.' });
     } finally {
@@ -106,7 +121,7 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
     <>
       <Modal
         opened={opened}
-        onClose={close}
+        onClose={onClose}
         centered
         size="sm"
         radius="md"
@@ -145,6 +160,7 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
               value={city}
               onChange={(event) => setCity(event.currentTarget.value)}
               required
+              maxLength={80}
               error={fieldErrors.city}
             />
             <TextInput
@@ -153,6 +169,7 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
               value={state}
               onChange={(event) => setState(event.currentTarget.value)}
               required
+              maxLength={2}
               error={fieldErrors.state}
             />
             {fieldErrors.general ? (
@@ -185,9 +202,9 @@ export const LocationSearchButton = ({ onLocationSelect }: LocationSearchButtonP
         onClick={() => {
           setFieldErrors({});
           if (opened) {
-            close();
+            onClose();
           } else {
-            open();
+            onOpen();
           }
         }}
         style={{ position: 'fixed', bottom: 16, right: 76, zIndex: 2000 }}

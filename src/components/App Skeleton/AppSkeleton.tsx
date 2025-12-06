@@ -24,6 +24,8 @@ import WeatherRadarModal from './_components/WeatherRadarModal';
 
 export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
+  const [isSearchOpen, { open: openSearch, close: closeSearch }] = useDisclosure(false);
+  const [isRadarOpen, { open: openRadar, close: closeRadar }] = useDisclosure(false);
   const isSmall = useMediaQuery('(max-width: 768px)');
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
@@ -147,8 +149,25 @@ export function AppSkeleton() {
         {hasHourlyData ? <HourlyTables periods={hourlyPeriods} /> : <HourlyTablesSkeleton />}
       </AppShell.Main>
 
-      <LocationSearchButton onLocationSelect={(lat, lon) => setCoordinates(lat, lon)} />
-      <WeatherRadarModal latitude={latitude} longitude={longitude} />
+      <LocationSearchButton
+        opened={isSearchOpen}
+        onOpen={() => {
+          closeRadar();
+          openSearch();
+        }}
+        onClose={closeSearch}
+        onLocationSelect={(lat, lon) => setCoordinates(lat, lon)}
+      />
+      <WeatherRadarModal
+        opened={isRadarOpen}
+        onOpen={() => {
+          closeSearch();
+          openRadar();
+        }}
+        onClose={closeRadar}
+        latitude={latitude}
+        longitude={longitude}
+      />
     </AppShell>
   );
 }
