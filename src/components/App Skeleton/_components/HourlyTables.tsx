@@ -1,4 +1,4 @@
-import { Card, Pill, Table, Text } from '@mantine/core';
+import { Card, Pill, Table, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import { formatHour } from '../../../../lib/time/formatHour';
 import { getDayPhase } from '../../../../lib/time/getDayPhase';
 import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
@@ -14,14 +14,58 @@ interface HourlyTablesProps {
 
 export const HourlyTables = ({ periods, maxHours = 48 }: HourlyTablesProps) => {
   const now = new Date();
+  const theme = useMantineTheme();
+  const colorScheme = useComputedColorScheme('light');
   const activePeriods = filterActivePeriods(periods ?? [], now);
 
-  if (!activePeriods.length) {
+  const baseCutoffMs = now.getTime() + maxHours * 60 * 60 * 1000;
+  const cutoffDate = new Date(baseCutoffMs);
+  cutoffDate.setHours(23, 59, 59, 999);
+  const cutoffMs = cutoffDate.getTime();
+
+  const windowedPeriods = activePeriods.filter((period) => {
+    const start = new Date(period.startTime).getTime();
+    return start <= cutoffMs;
+  });
+
+  if (!windowedPeriods.length) {
     return null;
   }
 
-  const limitedPeriods = activePeriods.slice(0, maxHours);
-  const grouped = groupHourlyPeriodsByDay(limitedPeriods, maxHours, now);
+  const grouped = groupHourlyPeriodsByDay(windowedPeriods, maxHours, now);
+
+  const dayExtremes = new Map<string, { high: number; low: number; unit: string | null }>();
+
+  grouped.forEach(({ label, periods: groupedPeriods }) => {
+    if (label === 'Today') {
+      return;
+    }
+
+    const temps = groupedPeriods
+      .map((period) => period.temperature)
+      .filter((value): value is number => typeof value === 'number');
+
+    const unit = groupedPeriods.find((period) => period.temperatureUnit)?.temperatureUnit ?? null;
+
+    const timestamps = groupedPeriods
+      .map((period) => new Date(period.startTime).getTime())
+      .filter((value) => !Number.isNaN(value))
+      .sort((a, b) => a - b);
+
+    const hasFullDayCoverage =
+      timestamps.length >= 24 &&
+      timestamps[timestamps.length - 1] - timestamps[0] >= 23 * 60 * 60 * 1000;
+
+    if (!temps.length || !hasFullDayCoverage) {
+      return;
+    }
+
+    dayExtremes.set(label, {
+      high: Math.max(...temps),
+      low: Math.min(...temps),
+      unit,
+    });
+  });
 
   return (
     <>
@@ -38,6 +82,21 @@ export const HourlyTables = ({ periods, maxHours = 48 }: HourlyTablesProps) => {
           <Card.Section>
             <Text size="lg" mt="md" mb="xs" ta="center" className={classes.title}>
               {label}
+              {label !== 'Today' && dayExtremes.has(label) ? (
+                <Text
+                  component="span"
+                  size="sm"
+                  fw={600}
+                  ml="sm"
+                  c={colorScheme === 'dark' ? theme.colors.sky[1] : theme.colors.dark[6]}
+                >
+                  {(() => {
+                    const extremes = dayExtremes.get(label)!;
+                    const unit = extremes.unit ?? '';
+                    return `↑ High ${extremes.high}${unit} • ↓ Low ${extremes.low}${unit}`;
+                  })()}
+                </Text>
+              ) : null}
             </Text>
           </Card.Section>
 

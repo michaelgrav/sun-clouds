@@ -1,5 +1,7 @@
 import { Period } from '../../types/weather';
 
+const HOUR_MS = 60 * 60 * 1000;
+
 const isSameLocalDay = (first: Date, second: Date) =>
   first.getFullYear() === second.getFullYear() &&
   first.getMonth() === second.getMonth() &&
@@ -15,7 +17,18 @@ export const groupHourlyPeriodsByDay = (
   maxHours = 48,
   today = new Date()
 ): GroupedPeriods[] => {
-  const windowed = periods.slice(0, maxHours);
+  const baseCutoffMs = today.getTime() + maxHours * HOUR_MS;
+  const cutoffDate = new Date(baseCutoffMs);
+  cutoffDate.setHours(23, 59, 59, 999);
+  const cutoffMs = cutoffDate.getTime();
+
+  // Keep all periods that fall within the requested window, then extend to the
+  // end of the last day touched so we do not drop the tail of that day.
+  const windowed = periods.filter((period) => {
+    const start = new Date(period.startTime);
+    return start.getTime() <= cutoffMs;
+  });
+
   if (!windowed.length) {
     return [];
   }
