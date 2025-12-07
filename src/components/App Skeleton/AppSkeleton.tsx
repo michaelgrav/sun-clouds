@@ -3,6 +3,8 @@ import {
   Alert,
   AppShell,
   Button,
+  Image,
+  Modal,
   Skeleton,
   Stack,
   Text,
@@ -10,7 +12,7 @@ import {
   useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { useDisclosure, useHotkeys, useMediaQuery } from '@mantine/hooks';
 import { useWeatherData } from '../../hooks/useWeatherData';
 import { AppHeader } from './_components/AppHeader';
 import { DailyForecastCards } from './_components/DailyForecastCards';
@@ -24,6 +26,8 @@ export function AppSkeleton() {
   const [opened, { toggle }] = useDisclosure();
   const [isSearchOpen, { open: openSearch, close: closeSearch }] = useDisclosure(false);
   const [isRadarOpen, { open: openRadar, close: closeRadar }] = useDisclosure(false);
+  const [isJordynOpen, { open: openJordyn, close: closeJordyn }] = useDisclosure(false);
+  const [isKinzieOpen, { open: openKinzie, close: closeKinzie }] = useDisclosure(false);
   const isSmall = useMediaQuery('(max-width: 768px)');
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
@@ -79,6 +83,35 @@ export function AppSkeleton() {
   }, [selectedLocationLabel, weatherData?.properties?.relativeLocation?.properties]);
 
   const showDataError = Boolean(errors.points || errors.forecast || errors.hourly || errors.alerts);
+
+  useHotkeys([
+    [
+      'shift+j',
+      () => {
+        closeSearch();
+        closeRadar();
+        closeKinzie();
+        if (isJordynOpen) {
+          closeJordyn();
+        } else {
+          openJordyn();
+        }
+      },
+    ],
+    [
+      'shift+k',
+      () => {
+        closeSearch();
+        closeRadar();
+        closeJordyn();
+        if (isKinzieOpen) {
+          closeKinzie();
+        } else {
+          openKinzie();
+        }
+      },
+    ],
+  ]);
 
   return (
     <AppShell
@@ -208,6 +241,42 @@ export function AppSkeleton() {
           longitude={longitude}
         />
       </Suspense>
+
+      <Modal
+        opened={isJordynOpen}
+        onClose={closeJordyn}
+        centered
+        title="Hello Jordyn!"
+        overlayProps={{ blur: 1.5, opacity: 0.4 }}
+        styles={{ title: { fontWeight: 800 } }}
+      >
+        <Text mb="xs">
+          Since I love you so much I put a little easter egg of a cute alien cat for ya.
+        </Text>
+        <Image
+          radius="md"
+          src="https://preview.redd.it/alien-cat-v0-519r9x4eyg2e1.jpg?width=640&crop=smart&auto=webp&s=ce81a80b046fd80cfd93423cc9483e3f918ac79c"
+        />
+        <Text mt="xs">Wait jordyn...I think... grandma carter is right behind you...</Text>
+      </Modal>
+
+      <Modal
+        opened={isKinzieOpen}
+        onClose={closeKinzie}
+        centered
+        title="Hello Kinzie!"
+        overlayProps={{ blur: 1.5, opacity: 0.4 }}
+        styles={{ title: { fontWeight: 800 } }}
+      >
+        <Text mb="xs">
+          Why did you even do this combination of keys? Well, anyways here's a fun cat photo for ya.
+        </Text>
+        <Image
+          radius="md"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwzJ8QDWEyQx3eqt_m30TNtA9-CWKBAvUjdQ&s"
+        />
+        <Text mt="xs">Now scram!</Text>
+      </Modal>
     </AppShell>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActionIcon,
   Center,
@@ -26,6 +26,9 @@ export const WeatherRadarModal = ({
   onClose,
 }: WeatherRadarModalProps) => {
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [showEnthusiast, setShowEnthusiast] = useState(false);
+  const openCountRef = useRef(0);
+  const overlayTimerRef = useRef<number | null>(null);
   const isSmall = useMediaQuery('(max-width: 768px)');
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
@@ -73,7 +76,32 @@ export const WeatherRadarModal = ({
     }
   }, [latitude, longitude, opened]);
 
+  useEffect(() => {
+    if (!opened) {
+      return;
+    }
+
+    openCountRef.current += 1;
+    if (openCountRef.current % 3 === 0) {
+      if (overlayTimerRef.current) {
+        window.clearTimeout(overlayTimerRef.current);
+      }
+      setShowEnthusiast(true);
+      overlayTimerRef.current = window.setTimeout(() => setShowEnthusiast(false), 2800);
+    }
+  }, [opened]);
+
+  useEffect(
+    () => () => {
+      if (overlayTimerRef.current) {
+        window.clearTimeout(overlayTimerRef.current);
+      }
+    },
+    []
+  );
+
   const shouldShowSkeleton = opened && (!hasCoords || (hasCoords && !mapLoaded));
+  const shouldShowEnthusiast = showEnthusiast && opened;
 
   const handleClose = () => {
     setMapLoaded(false);
@@ -127,6 +155,53 @@ export const WeatherRadarModal = ({
         }}
       >
         <div style={frameShell}>
+          {shouldShowEnthusiast && (
+            <>
+              <style>
+                {`
+@keyframes enthusiastStamp {
+  0% { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+  30% { transform: scale(1.05) rotate(3deg); opacity: 1; }
+  60% { transform: scale(1) rotate(-2deg); opacity: 0.95; }
+  100% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+}
+                `}
+              </style>
+              <div
+                aria-live="polite"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 10,
+                  pointerEvents: 'none',
+                }}
+              >
+                <div
+                  style={{
+                    padding: isSmall ? '10px 18px' : '12px 20px',
+                    borderRadius: 14,
+                    background:
+                      colorScheme === 'dark' ? 'rgba(12, 18, 32, 0.92)' : 'rgba(255,255,255,0.92)',
+                    color: colorScheme === 'dark' ? theme.colors.sunshine[1] : '#0b2a3a',
+                    fontWeight: 900,
+                    fontSize: isSmall ? 18 : 22,
+                    letterSpacing: 0.3,
+                    border: `2px dashed ${colorScheme === 'dark' ? theme.colors.sunshine[3] : '#0b2a3a'}`,
+                    boxShadow: '0 10px 32px rgba(0,0,0,0.25)',
+                    animation: 'enthusiastStamp 0.7s ease-out',
+                    transformOrigin: 'center',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Wow, you really like radars huh? Das ok I won't judge ya.
+                </div>
+              </div>
+            </>
+          )}
+
           {shouldShowSkeleton && (
             <Center
               style={{ flex: 1, width: '100%', minHeight: '100%', padding: isSmall ? 12 : 16 }}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getFilteredChartTooltipPayload, LineChart } from '@mantine/charts';
 import {
   Paper,
@@ -15,14 +15,53 @@ import { Period } from '../../../../types/weather';
 type ChartTooltipProps = {
   label?: React.ReactNode;
   payload?: ReadonlyArray<{ name?: string; value?: unknown; color?: string }>;
+  active?: boolean;
+  onHoldReveal?: () => void;
+  onHoldCancel?: () => void;
+  showSecret?: boolean;
 };
 
 interface ForecastLineChartProps {
   data?: Period[];
 }
 
-const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
+const roundToStep = (value: number, step: number, direction: 'floor' | 'ceil') =>
+  direction === 'floor' ? Math.floor(value / step) * step : Math.ceil(value / step) * step;
+
+const ChartTooltip = ({
+  label,
+  payload,
+  active,
+  onHoldReveal,
+  onHoldCancel,
+  showSecret,
+}: ChartTooltipProps) => {
+  const holdTimerRef = useRef<number | null>(null);
   const filtered = getFilteredChartTooltipPayload(Array.from(payload ?? []));
+  const stopTimer = () => {
+    if (holdTimerRef.current) {
+      window.clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    if (active && filtered.length) {
+      if (!holdTimerRef.current) {
+        holdTimerRef.current = window.setTimeout(() => {
+          onHoldReveal?.();
+        }, 3000);
+      }
+    } else {
+      onHoldCancel?.();
+      stopTimer();
+    }
+
+    return () => {
+      stopTimer();
+    };
+  }, [active, label, filtered, onHoldReveal, onHoldCancel]);
+
   if (!filtered.length) {
     return null;
   }
@@ -38,15 +77,23 @@ const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
           {item.name.toLowerCase().includes('temperature') ? '°F' : '%'}
         </Text>
       ))}
+
+      {showSecret && (
+        <Text mt={8} fw={700} size="sm" c="#e53981">
+          Hey Jordyn, you found a secret!!!
+        </Text>
+      )}
     </Paper>
   );
 };
 
 export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const [showSecretTooltip, setShowSecretTooltip] = useState(false);
   const hoursToShow = isMobile ? 4 : 12;
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
+  const holdResetRef = useRef<number | null>(null);
 
   const now = useMemo(() => new Date(), []);
 
@@ -65,6 +112,29 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
     [filteredPeriods, hoursToShow]
   );
 
+  const handleHoldReveal = useCallback(() => {
+    if (holdResetRef.current) {
+      window.clearTimeout(holdResetRef.current);
+    }
+    setShowSecretTooltip(true);
+  }, []);
+
+  const handleHoldCancel = useCallback(() => {
+    if (holdResetRef.current) {
+      window.clearTimeout(holdResetRef.current);
+    }
+    holdResetRef.current = window.setTimeout(() => setShowSecretTooltip(false), 120);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (holdResetRef.current) {
+        window.clearTimeout(holdResetRef.current);
+      }
+    },
+    []
+  );
+
   const { minTemp, maxTemp, hasPrecip } = useMemo(() => {
     const temps = chartData
       .map((point) => point.temperature)
@@ -73,11 +143,16 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
     const minTempRaw = temps.length ? Math.min(...temps) : undefined;
     const maxTempRaw = temps.length ? Math.max(...temps) : undefined;
 
-    const buffer = 10;
+    const step = 5;
+    const buffer = 5;
     const bufferedMin =
-      minTempRaw != null && maxTempRaw != null ? Math.floor(minTempRaw - buffer) : minTempRaw;
+      minTempRaw != null && maxTempRaw != null
+        ? roundToStep(minTempRaw - buffer, step, 'floor')
+        : minTempRaw;
     const bufferedMax =
-      minTempRaw != null && maxTempRaw != null ? Math.ceil(maxTempRaw + buffer) : maxTempRaw;
+      minTempRaw != null && maxTempRaw != null
+        ? roundToStep(maxTempRaw + buffer, step, 'ceil')
+        : maxTempRaw;
 
     const precipPresent = chartData.some(
       (point) => typeof point.precipitation === 'number' && point.precipitation > 0
@@ -96,6 +171,22 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
     ],
     [colorScheme]
   );
+
+  const temperatureTicks = useMemo(() => {
+    if (minTemp == null || maxTemp == null) {
+      return undefined;
+    }
+
+    const ticks: number[] = [];
+    const start = roundToStep(minTemp, 5, 'floor');
+    const end = roundToStep(maxTemp, 5, 'ceil');
+
+    for (let value = start; value <= end; value += 5) {
+      ticks.push(value);
+    }
+
+    return ticks;
+  }, [minTemp, maxTemp]);
 
   const precipSeries = useMemo(
     () => [
@@ -169,10 +260,25 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
           strokeWidth={3}
           curveType="natural"
           yAxisLabel="Temp (°F)"
-          yAxisProps={{ domain: [minTemp ?? 'auto', maxTemp ?? 'auto'] }}
+          yAxisProps={{
+            domain: [minTemp ?? 'auto', maxTemp ?? 'auto'],
+            ticks: temperatureTicks,
+            tickCount: temperatureTicks?.length,
+            allowDecimals: false,
+          }}
+          gridAxis="x"
           valueFormatter={(value) => `${value}°F`}
           tooltipAnimationDuration={200}
-          tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
+          tooltipProps={{
+            content: (props: ChartTooltipProps) => (
+              <ChartTooltip
+                {...props}
+                onHoldReveal={handleHoldReveal}
+                onHoldCancel={handleHoldCancel}
+                showSecret={showSecretTooltip}
+              />
+            ),
+          }}
           dotProps={{ r: 3 }}
         />
       </Paper>
@@ -201,10 +307,20 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             strokeWidth={3}
             curveType="natural"
             yAxisLabel="Precip (%)"
-            yAxisProps={{ domain: [0, 100], tickMargin: 8 }}
+            yAxisProps={{ domain: [0, 100], tickMargin: 8, tickCount: 6, allowDecimals: false }}
+            gridAxis="y"
             valueFormatter={(value) => `${value}%`}
             tooltipAnimationDuration={200}
-            tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
+            tooltipProps={{
+              content: (props: ChartTooltipProps) => (
+                <ChartTooltip
+                  {...props}
+                  onHoldReveal={handleHoldReveal}
+                  onHoldCancel={handleHoldCancel}
+                  showSecret={showSecretTooltip}
+                />
+              ),
+            }}
             dotProps={{ r: 3 }}
             activeDotProps={{ r: 5, strokeWidth: 1 }}
           />

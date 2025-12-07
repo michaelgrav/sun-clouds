@@ -31,4 +31,17 @@ describe('groupHourlyPeriodsByDay', () => {
 
     expect(grouped).toEqual([]);
   });
+
+  it('extends the window to the end of the last day touched by the horizon', () => {
+    const later = [
+      { startTime: new Date(2024, 0, 3, 18, 0, 0).toISOString() },
+      { startTime: new Date(2024, 0, 1, 1, 0, 0).toISOString() },
+    ];
+
+    const grouped = groupHourlyPeriodsByDay(later as any, 48, baseDate);
+
+    expect(grouped.some((group) => group.label === 'Wednesday')).toBe(true);
+    const wedGroup = grouped.find((group) => group.label === 'Wednesday');
+    expect(wedGroup?.periods.some((p) => p.startTime.includes('T18:00:00'))).toBe(true);
+  });
 });

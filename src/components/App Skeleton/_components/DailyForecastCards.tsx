@@ -9,7 +9,6 @@ import {
   useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-import { getDayPhase } from '../../../../lib/time/getDayPhase';
 import { Period } from '../../../../types/weather';
 
 interface DailyForecastCardsProps {
@@ -51,14 +50,6 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
     boxShadow:
       colorScheme === 'dark' ? '0 8px 20px rgba(0,0,0,0.32)' : '0 8px 18px rgba(10, 68, 122, 0.08)',
   } as const;
-
-  const renderName = (period: Period) => {
-    const phase = getDayPhase(period.startTime);
-    if (period.name) {
-      return phase ? `${period.name} · ${phase}` : period.name;
-    }
-    return phase ? phase : '—';
-  };
 
   if (!periods) {
     return (
@@ -131,7 +122,7 @@ export const DailyForecastCards = ({ periods }: DailyForecastCardsProps) => {
                 fw={700}
                 c={colorScheme === 'dark' ? theme.colors.sky[0] : '#0b2a3a'}
               >
-                {renderName(period)}
+                {period.name}
               </Text>
 
               <Divider my="xs" />
