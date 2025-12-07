@@ -1,4 +1,16 @@
-import { Card, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Alert,
+  Card,
+  Skeleton,
+  Stack,
+  Text,
+  useComputedColorScheme,
+  useMantineTheme,
+} from '@mantine/core';
+import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
+import getWeatherEmoji from '../../../../lib/weather/getWeatherEmoji';
+import { Period } from '../../../../types/weather';
 
 interface CurrentSummaryCardProps {
   summary?: string;
@@ -88,28 +100,6 @@ export const CurrentSummaryCard = ({ summary, hourlyPeriods }: CurrentSummaryCar
   );
 
   const displayEmoji = goofyEmoji ?? baseEmoji;
-
-  const currentPeriod = getCurrentPeriod(hourlyPeriods ?? []);
-  const currentTemp = formatTemperatureValue(
-    currentPeriod?.temperature,
-    currentPeriod?.temperatureUnit ?? undefined
-  );
-
-  const precipChance = currentPeriod?.probabilityOfPrecipitation?.value;
-  const rainChanceText =
-    typeof precipChance === 'number' && precipChance >= 0
-      ? `${Math.round(precipChance)}% chance of rain`
-      : null;
-
-  const conditionsText = currentPeriod?.shortForecast ?? 'Conditions unavailable';
-
-  const { high, low, unit } = getTodayHighLow(hourlyPeriods ?? [], currentPeriod?.temperatureUnit);
-  const highLowText =
-    high != null || low != null
-      ? `↑ High ${formatTemperatureValue(high, unit) ?? '--'} / ↓ Low ${
-          formatTemperatureValue(low, unit) ?? '--'
-        }`
-      : null;
 
   const cardStyle = {
     background:
@@ -226,6 +216,40 @@ export const CurrentSummaryCard = ({ summary, hourlyPeriods }: CurrentSummaryCar
           Current Weather Summary
         </Text>
       </Card.Section>
+
+      <Stack gap={8} align="center" mb="sm">
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, justifyContent: 'center' }}>
+          <Text
+            size="64"
+            lh={1}
+            style={{ cursor: 'pointer' }}
+            onPointerDown={handleEmojiHoldStart}
+            onPointerUp={handleEmojiHoldEnd}
+            onPointerLeave={handleEmojiHoldEnd}
+            title="Press and hold for a surprise"
+          >
+            {displayEmoji}
+          </Text>
+
+          {currentTemp ? (
+            <Text size="56" fw={900} lh={1} ta="center" c={headingColor}>
+              {currentTemp}
+            </Text>
+          ) : (
+            <Skeleton width={140} height={52} radius="sm" />
+          )}
+        </div>
+
+        <Text size="sm" ta="center" c={bodyColor}>
+          {rainChanceText ? `${conditionsText} - ${rainChanceText}` : conditionsText}
+        </Text>
+
+        {highLowText ? (
+          <Text size="sm" ta="center" c={bodyColor}>
+            {highLowText}
+          </Text>
+        ) : null}
+      </Stack>
 
       <Text size="sm" ta="center" c={bodyColor}>
         📝 Detailed description:{' '}

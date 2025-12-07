@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getFilteredChartTooltipPayload, LineChart } from '@mantine/charts';
 import {
   Paper,
@@ -98,17 +99,122 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
 
   const filteredPeriods = useMemo(() => filterActivePeriods(data ?? [], now), [data, now]);
 
-  const cardStyle = {
-    background:
-      colorScheme === 'dark'
-        ? 'linear-gradient(135deg, #162235 0%, #0e1724 100%)'
-        : 'linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%)',
-    border: `1px solid ${colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.35)' : '#a9d4ff'}`,
-    boxShadow:
-      colorScheme === 'dark'
-        ? '0 10px 24px rgba(0,0,0,0.35)'
-        : '0 8px 20px rgba(10, 68, 122, 0.08)',
-  } as const;
+  const chartData = useMemo(
+    () =>
+      filteredPeriods.slice(0, hoursToShow).map((period) => {
+        const date = new Date(period.startTime);
+        return {
+          date: date.toLocaleTimeString([], { hour: 'numeric' }),
+          temperature: period.temperature,
+          precipitation: period.probabilityOfPrecipitation?.value ?? null,
+        };
+      }),
+    [filteredPeriods, hoursToShow]
+  );
+
+  const handleHoldReveal = useCallback(() => {
+    if (holdResetRef.current) {
+      window.clearTimeout(holdResetRef.current);
+    }
+    setShowSecretTooltip(true);
+  }, []);
+
+  const handleHoldCancel = useCallback(() => {
+    if (holdResetRef.current) {
+      window.clearTimeout(holdResetRef.current);
+    }
+    holdResetRef.current = window.setTimeout(() => setShowSecretTooltip(false), 120);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (holdResetRef.current) {
+        window.clearTimeout(holdResetRef.current);
+      }
+    },
+    []
+  );
+
+  const { minTemp, maxTemp, hasPrecip } = useMemo(() => {
+    const temps = chartData
+      .map((point) => point.temperature)
+      .filter((t): t is number => typeof t === 'number');
+
+    const minTempRaw = temps.length ? Math.min(...temps) : undefined;
+    const maxTempRaw = temps.length ? Math.max(...temps) : undefined;
+
+    const step = 5;
+    const buffer = 5;
+    const bufferedMin =
+      minTempRaw != null && maxTempRaw != null
+        ? roundToStep(minTempRaw - buffer, step, 'floor')
+        : minTempRaw;
+    const bufferedMax =
+      minTempRaw != null && maxTempRaw != null
+        ? roundToStep(maxTempRaw + buffer, step, 'ceil')
+        : maxTempRaw;
+
+    const precipPresent = chartData.some(
+      (point) => typeof point.precipitation === 'number' && point.precipitation > 0
+    );
+
+    return { minTemp: bufferedMin, maxTemp: bufferedMax, hasPrecip: precipPresent } as const;
+  }, [chartData]);
+
+  const temperatureSeries = useMemo(
+    () => [
+      {
+        name: 'temperature',
+        label: 'Temperature',
+        color: colorScheme === 'dark' ? '#ffb429' : '#ffb429',
+      },
+    ],
+    [colorScheme]
+  );
+
+  const temperatureTicks = useMemo(() => {
+    if (minTemp == null || maxTemp == null) {
+      return undefined;
+    }
+
+    const ticks: number[] = [];
+    const start = roundToStep(minTemp, 5, 'floor');
+    const end = roundToStep(maxTemp, 5, 'ceil');
+
+    for (let value = start; value <= end; value += 5) {
+      ticks.push(value);
+    }
+
+    return ticks;
+  }, [minTemp, maxTemp]);
+
+  const precipSeries = useMemo(
+    () => [
+      {
+        name: 'precipitation',
+        label: 'Precipitation',
+        color: colorScheme === 'dark' ? theme.colors.sky[3] : theme.colors.sky[5],
+        strokeDasharray: '6 3',
+      },
+    ],
+    [colorScheme, theme.colors.sky]
+  );
+
+  const cardStyle = useMemo(
+    () =>
+      ({
+        background:
+          colorScheme === 'dark'
+            ? 'linear-gradient(135deg, #162235 0%, #0e1724 100%)'
+            : 'linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%)',
+        border: `1px solid ${colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.35)' : '#a9d4ff'}`,
+        boxShadow:
+          colorScheme === 'dark'
+            ? '0 10px 24px rgba(0,0,0,0.35)'
+            : '0 8px 20px rgba(10, 68, 122, 0.08)',
+      }) as const,
+    [colorScheme]
+  );
 
   const shouldShowSkeleton = !chartData.length;
 
