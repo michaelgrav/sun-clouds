@@ -1,18 +1,5 @@
-import { lazy, Suspense, useMemo } from 'react';
-import {
-  Alert,
-  AppShell,
-  Button,
-  Image,
-  Modal,
-  Skeleton,
-  Stack,
-  Text,
-  Title,
-  useComputedColorScheme,
-  useMantineTheme,
-} from '@mantine/core';
-import { useDisclosure, useHotkeys, useMediaQuery } from '@mantine/hooks';
+import { AppShell, Divider } from '@mantine/core';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useWeatherData } from '../../hooks/useWeatherData';
 import { AppHeader } from './_components/AppHeader';
 import { DailyForecastCards } from './_components/DailyForecastCards';
@@ -47,71 +34,12 @@ export function AppSkeleton() {
     dismissGeolocationWarning,
   } = useWeatherData();
 
-  const alertGradient =
-    colorScheme === 'dark'
-      ? 'linear-gradient(135deg, #162235 0%, #0e1724 100%)'
-      : 'linear-gradient(135deg, #fff9e6 0%, #e8f5ff 100%)';
-  const alertBorder = colorScheme === 'dark' ? 'rgba(140, 199, 255, 0.35)' : '#a9d4ff';
-  const alertTextColor = colorScheme === 'dark' ? theme.colors.sky[0] : '#0b2a3a';
-
-  const dailyPeriods = useMemo(
-    () => weatherForecast?.properties?.periods?.slice(1) ?? null,
-    [weatherForecast?.properties?.periods]
-  );
-
-  const hourlyPeriods = useMemo(
-    () => hourlyWeatherForecast?.properties?.periods ?? null,
-    [hourlyWeatherForecast?.properties?.periods]
-  );
-
-  const summary = useMemo(
-    () => weatherForecast?.properties?.periods?.[0]?.detailedForecast ?? null,
-    [weatherForecast?.properties?.periods]
-  );
-
-  const locationLabel = useMemo(() => {
-    if (selectedLocationLabel) {
-      return selectedLocationLabel;
-    }
-
-    const city = weatherData?.properties?.relativeLocation?.properties?.city;
-    const state = weatherData?.properties?.relativeLocation?.properties?.state;
-    if (city && state) {
-      return `${city}, ${state}`;
-    }
-    return null;
-  }, [selectedLocationLabel, weatherData?.properties?.relativeLocation?.properties]);
-
-  const showDataError = Boolean(errors.points || errors.forecast || errors.hourly || errors.alerts);
-
-  useHotkeys([
-    [
-      'shift+j',
-      () => {
-        closeSearch();
-        closeRadar();
-        closeKinzie();
-        if (isJordynOpen) {
-          closeJordyn();
-        } else {
-          openJordyn();
-        }
-      },
-    ],
-    [
-      'shift+k',
-      () => {
-        closeSearch();
-        closeRadar();
-        closeJordyn();
-        if (isKinzieOpen) {
-          closeKinzie();
-        } else {
-          openKinzie();
-        }
-      },
-    ],
-  ]);
+  const dailyPeriods = weatherForecast?.properties?.periods?.slice(1);
+  const hourlyPeriods = hourlyWeatherForecast?.properties?.periods;
+  const summary = weatherForecast?.properties?.periods?.[0]?.detailedForecast;
+  const locationLabel = weatherData
+    ? `${weatherData?.properties?.relativeLocation?.properties?.city}, ${weatherData?.properties?.relativeLocation?.properties?.state}`
+    : null;
 
   return (
     <AppShell
@@ -229,54 +157,16 @@ export function AppSkeleton() {
         onClose={closeSearch}
         onLocationSelect={(lat, lon, label) => setCoordinates(lat, lon, label)}
       />
-      <Suspense fallback={null}>
-        <WeatherRadarModal
-          opened={isRadarOpen}
-          onOpen={() => {
-            closeSearch();
-            openRadar();
-          }}
-          onClose={closeRadar}
-          latitude={latitude}
-          longitude={longitude}
-        />
-      </Suspense>
-
-      <Modal
-        opened={isJordynOpen}
-        onClose={closeJordyn}
-        centered
-        title="Hello Jordyn!"
-        overlayProps={{ blur: 1.5, opacity: 0.4 }}
-        styles={{ title: { fontWeight: 800 } }}
-      >
-        <Text mb="xs">
-          Since I love you so much I put a little easter egg of a cute alien cat for ya.
-        </Text>
-        <Image
-          radius="md"
-          src="https://preview.redd.it/alien-cat-v0-519r9x4eyg2e1.jpg?width=640&crop=smart&auto=webp&s=ce81a80b046fd80cfd93423cc9483e3f918ac79c"
-        />
-        <Text mt="xs">Wait jordyn...I think... grandma carter is right behind you...</Text>
-      </Modal>
-
-      <Modal
-        opened={isKinzieOpen}
-        onClose={closeKinzie}
-        centered
-        title="Hello Kinzie!"
-        overlayProps={{ blur: 1.5, opacity: 0.4 }}
-        styles={{ title: { fontWeight: 800 } }}
-      >
-        <Text mb="xs">
-          Why did you even do this combination of keys? Well, anyways here's a fun cat photo for ya.
-        </Text>
-        <Image
-          radius="md"
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwzJ8QDWEyQx3eqt_m30TNtA9-CWKBAvUjdQ&s"
-        />
-        <Text mt="xs">Now scram!</Text>
-      </Modal>
+      <WeatherRadarModal
+        opened={isRadarOpen}
+        onOpen={() => {
+          closeSearch();
+          openRadar();
+        }}
+        onClose={closeRadar}
+        latitude={latitude}
+        longitude={longitude}
+      />
     </AppShell>
   );
 }

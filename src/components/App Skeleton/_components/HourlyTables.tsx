@@ -1,6 +1,7 @@
 import { Card, Pill, Table, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import { formatHour } from '../../../../lib/time/formatHour';
 import { getDayPhase } from '../../../../lib/time/getDayPhase';
+import { getDayPhase } from '../../../../lib/time/getDayPhase';
 import { filterActivePeriods } from '../../../../lib/weather/filterActivePeriods';
 import { getWeatherEmoji } from '../../../../lib/weather/getWeatherEmoji';
 import { groupHourlyPeriodsByDay } from '../../../../lib/weather/groupHourlyPeriods';
@@ -128,6 +129,35 @@ export const HourlyTables = ({ periods, maxHours = 48 }: HourlyTablesProps) => {
                         aria-label={period.shortForecast ?? 'Weather condition'}
                       >
                         {emoji}
+                      </span>
+                      <span className={classes.timeLabel}>
+                        {formatHour(period.startTime)}
+                        {(() => {
+                          const phase = getDayPhase(period.startTime);
+                          if (!phase) {
+                            return null;
+                          }
+                          const pillColor = phase === 'Day' ? 'sunshine' : 'sky';
+                          const pillTone = phase === 'Day' ? 5 : 6;
+                          const pillBg = `var(--mantine-color-${pillColor}-${pillTone})`;
+                          const pillText = phase === 'Day' ? '#7a4a00' : '#0b2a3a';
+                          return (
+                            <Pill
+                              size="xs"
+                              ml={6}
+                              radius="md"
+                              style={{
+                                backgroundColor: pillBg,
+                                color: pillText,
+                                fontWeight: 700,
+                                lineHeight: 1.1,
+                                border: '1px solid rgba(0,0,0,0.06)',
+                              }}
+                            >
+                              {phase}
+                            </Pill>
+                          );
+                        })()}
                       </span>
                       <span className={classes.timeLabel}>
                         {formatHour(period.startTime)}
