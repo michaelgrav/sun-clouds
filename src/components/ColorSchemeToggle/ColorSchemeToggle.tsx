@@ -112,7 +112,7 @@ export function ColorSchemeToggle() {
 
     if (!popupRef.current) {
       const popup = document.createElement('div');
-      popup.textContent = 'Party mode engaged!';
+      popup.textContent = 'I like to move it move it!';
       popup.style.position = 'fixed';
       popup.style.left = '50%';
       popup.style.bottom = '28px';

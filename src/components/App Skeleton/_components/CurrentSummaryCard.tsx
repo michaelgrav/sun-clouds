@@ -32,6 +32,7 @@ const isSameLocalDay = (first: Date, second: Date) =>
   first.getDate() === second.getDate();
 
 const getTodayHighLow = (periods: Period[] = [], fallbackUnit?: string | null) => {
+  console.log(periods);
   const now = new Date();
   const todaysPeriods = periods
     .map((period) => ({
@@ -202,11 +203,11 @@ export const CurrentSummaryCard = ({ summary, hourlyPeriods }: CurrentSummaryCar
           radius="md"
           mb="sm"
           variant="light"
-          title="Leet weather check completed."
+          title="Rawr XD leet time..."
           styles={{ title: { fontWeight: 800 } }}
         >
           <Text size="sm" c={bodyColor}>
-            Thanks for stopping by at 13:37 — the forecast is feeling extra elite.
+            The time is now 13:37, check outside for MLG edits, doritos on the ground, and Mt Dew rain!
           </Text>
         </Alert>
       )}

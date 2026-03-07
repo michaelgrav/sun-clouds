@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@test-utils';
+import { render, screen } from '@test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { SavedLocation } from '../../../../types/locations';
 import { useLocationHistory } from '../../../hooks/useLocationHistory';
@@ -102,24 +102,5 @@ describe('LocationSearchButton', () => {
     } finally {
       window.matchMedia = originalMatchMedia;
     }
-  });
-
-  it('closes the modal when selecting a saved location', async () => {
-    const user = userEvent.setup();
-
-    mockUseLocationHistory.mockReturnValue({
-      favorites: [buildSavedLocation()],
-      recents: [],
-      addRecent: vi.fn(),
-      toggleFavorite: vi.fn(),
-    });
-
-    const onClose = vi.fn();
-    render(<LocationSearchButton {...baseProps} onClose={onClose} />);
-
-    await user.click(screen.getByRole('button', { name: 'Austin, TX' }));
-
-    expect(baseProps.onLocationSelect).toHaveBeenCalledWith(30.2672, -97.7431, 'Austin, TX');
-    expect(onClose).toHaveBeenCalled();
   });
 });

@@ -276,10 +276,7 @@ export const LocationSearchButton = ({
                     overflow: 'visible',
                   },
                 }}
-                onClick={() => {
-                  onLocationSelect(item.latitude, item.longitude, item.label);
-                  onClose();
-                }}
+                onClick={() => onLocationSelect(item.latitude, item.longitude, item.label)}
                 leftSection={<span aria-hidden="true">📍</span>}
               >
                 <span style={{ flex: '0 1 auto' }}>{item.label}</span>

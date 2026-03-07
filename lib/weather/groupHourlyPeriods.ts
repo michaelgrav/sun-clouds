@@ -7,18 +7,6 @@ const isSameLocalDay = (first: Date, second: Date) =>
   first.getMonth() === second.getMonth() &&
   first.getDate() === second.getDate();
 
-const formatLocalISOString = (date: Date) => {
-  const pad = (value: number) => value.toString().padStart(2, '0');
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-};
-
 export interface GroupedPeriods {
   label: string;
   periods: Period[];
@@ -36,16 +24,10 @@ export const groupHourlyPeriodsByDay = (
 
   // Keep all periods that fall within the requested window, then extend to the
   // end of the last day touched so we do not drop the tail of that day.
-  const windowed = periods
-    .map((period) => {
-      const start = new Date(period.startTime);
-      return { start, period };
-    })
-    .filter(({ start }) => start.getTime() <= cutoffMs)
-    .map(({ start, period }) => ({
-      ...period,
-      startTime: formatLocalISOString(start),
-    }));
+  const windowed = periods.filter((period) => {
+    const start = new Date(period.startTime);
+    return start.getTime() <= cutoffMs;
+  });
 
   if (!windowed.length) {
     return [];

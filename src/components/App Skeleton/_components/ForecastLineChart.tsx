@@ -15,10 +15,6 @@ import { Period } from '../../../../types/weather';
 type ChartTooltipProps = {
   label?: React.ReactNode;
   payload?: ReadonlyArray<{ name?: string; value?: unknown; color?: string }>;
-  active?: boolean;
-  onHoldReveal?: () => void;
-  onHoldCancel?: () => void;
-  showSecret?: boolean;
 };
 
 interface ForecastLineChartProps {
@@ -28,40 +24,8 @@ interface ForecastLineChartProps {
 const roundToStep = (value: number, step: number, direction: 'floor' | 'ceil') =>
   direction === 'floor' ? Math.floor(value / step) * step : Math.ceil(value / step) * step;
 
-const ChartTooltip = ({
-  label,
-  payload,
-  active,
-  onHoldReveal,
-  onHoldCancel,
-  showSecret,
-}: ChartTooltipProps) => {
-  const holdTimerRef = useRef<number | null>(null);
+const ChartTooltip = ({ label, payload }: ChartTooltipProps) => {
   const filtered = getFilteredChartTooltipPayload(Array.from(payload ?? []));
-  const stopTimer = () => {
-    if (holdTimerRef.current) {
-      window.clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
-    }
-  };
-
-  useEffect(() => {
-    if (active && filtered.length) {
-      if (!holdTimerRef.current) {
-        holdTimerRef.current = window.setTimeout(() => {
-          onHoldReveal?.();
-        }, 3000);
-      }
-    } else {
-      onHoldCancel?.();
-      stopTimer();
-    }
-
-    return () => {
-      stopTimer();
-    };
-  }, [active, label, filtered, onHoldReveal, onHoldCancel]);
-
   if (!filtered.length) {
     return null;
   }
@@ -77,23 +41,15 @@ const ChartTooltip = ({
           {item.name.toLowerCase().includes('temperature') ? '°F' : '%'}
         </Text>
       ))}
-
-      {showSecret && (
-        <Text mt={8} fw={700} size="sm" c="#e53981">
-          Hey Jordyn, you found a secret!!!
-        </Text>
-      )}
     </Paper>
   );
 };
 
 export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const [showSecretTooltip, setShowSecretTooltip] = useState(false);
   const hoursToShow = isMobile ? 4 : 12;
   const theme = useMantineTheme();
   const colorScheme = useComputedColorScheme('light');
-  const holdResetRef = useRef<number | null>(null);
 
   const now = useMemo(() => new Date(), []);
 
@@ -269,16 +225,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
           gridAxis="x"
           valueFormatter={(value) => `${value}°F`}
           tooltipAnimationDuration={200}
-          tooltipProps={{
-            content: (props: ChartTooltipProps) => (
-              <ChartTooltip
-                {...props}
-                onHoldReveal={handleHoldReveal}
-                onHoldCancel={handleHoldCancel}
-                showSecret={showSecretTooltip}
-              />
-            ),
-          }}
+          tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
           dotProps={{ r: 3 }}
         />
       </Paper>
@@ -311,16 +258,7 @@ export const ForecastLineChart = ({ data }: ForecastLineChartProps) => {
             gridAxis="y"
             valueFormatter={(value) => `${value}%`}
             tooltipAnimationDuration={200}
-            tooltipProps={{
-              content: (props: ChartTooltipProps) => (
-                <ChartTooltip
-                  {...props}
-                  onHoldReveal={handleHoldReveal}
-                  onHoldCancel={handleHoldCancel}
-                  showSecret={showSecretTooltip}
-                />
-              ),
-            }}
+            tooltipProps={{ content: (props: ChartTooltipProps) => <ChartTooltip {...props} /> }}
             dotProps={{ r: 3 }}
             activeDotProps={{ r: 5, strokeWidth: 1 }}
           />
